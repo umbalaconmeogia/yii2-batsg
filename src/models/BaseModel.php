@@ -3,6 +3,7 @@
 namespace batsg\models;
 
 use Yii;
+use batsg\helpers\HRandom;
 
 class BaseModel extends \yii\db\ActiveRecord
 {
@@ -138,34 +139,19 @@ class BaseModel extends \yii\db\ActiveRecord
     }
 
     /**
-     * @param number $length The length of the string.
-     * @param integer $characterCase If 0, character is case sensitive. If -1, all characters are converted to lower case. If 1, all characters are converted to upper case.
-     */
-    public static function generateRandomString($length = 32, $characterCase = 0)
-    {
-        $randomString = Yii::$app->getSecurity()->generateRandomString($length);
-        switch ($characterCase) {
-            case -1:
-                $randomString = strtolower($randomString);
-                break;
-            case 1:
-                $randomString = strtoupper($randomString);
-                break;
-        }
-        return $randomString;
-    }
-
-    /**
      * Generate a random string that is unique when put on an attribute of a DB table.
      * @param string $attribute The attribute to be checked.
      * @param string $prefix The prefix of the generated string.
      * @param number $length The length of the string.
-     * @param integer $characterCase If 0, character is case sensitive. If -1, all characters are converted to lower case. If 1, all characters are converted to upper case.
+     * @param string $characterSet
+     *            If specified, then only character in this string is used.
+     * @param integer $characterCase
+     *            If 0, character is case sensitive. If -1, all characters are converted to lower case. If 1, all characters are converted to upper case.
      * @return string
      */
-    public function generateUniqueRandomString($attribute, $prefix = NULL, $length = 32, $characterCase = 0)
+    public function generateUniqueRandomString($attribute, $prefix = NULL, $length = 32, $characterSet = NULL, $characterCase = 0)
     {
-        $randomString = self::generateRandomString($length, $characterCase);
+        $randomString = HRandom::generateRandomString($length, $characterSet, $characterCase);
         $randomString = $prefix . $randomString;
 
         if ($this->findOne([$attribute => $randomString])) {
