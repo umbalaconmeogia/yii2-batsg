@@ -27,9 +27,11 @@ class BaseMigrationCreateTable extends BaseMigration
             $this->createDbTable();
             $this->initDbTable();
         } catch (\Exception $e) {
-            $this->dropTableThrow($e);
-        } catch (\Throwable $e) {
-            $this->dropTableThrow($e);
+            // Drop table if exist.
+            if (\Yii::$app->db->schema->getTableSchema($this->table)) {
+                $this->dropTable($this->table);
+            }
+            throw $e;
         }
     }
 
@@ -40,16 +42,6 @@ class BaseMigrationCreateTable extends BaseMigration
     public function down()
     {
         $this->dropTable($this->table);
-    }
-
-    private function dropTableThrow($e)
-    {
-        // Drop table if exist.
-        echo "Drop table $this->table";
-        if (\Yii::$app->db->schema->getTableSchema($this->table)) {
-            $this->dropTable($this->table);
-        }
-        throw $e;
     }
 
     /**

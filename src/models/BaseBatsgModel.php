@@ -4,7 +4,6 @@ namespace batsg\models;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
-use yii\base\Model;
 
 /**
  * Model that has field $id, $data_status, $created_at, $created_by, $update_time, $updated_by.
