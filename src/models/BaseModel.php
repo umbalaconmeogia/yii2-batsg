@@ -154,8 +154,9 @@ class BaseModel extends \yii\db\ActiveRecord
         $randomString = HRandom::generateRandomString($length, $characterSet, $characterCase);
         $randomString = $prefix . $randomString;
 
+        // Loop until find unique string.
         if ($this->findOne([$attribute => $randomString])) {
-            $randomString = $this->generateUniqueRandomString($attribute, $prefix, $length, $characterCase);
+            $randomString = $this->generateUniqueRandomString($attribute, $prefix, $length, $characterSet, $characterCase);
         }
 
         return $randomString;

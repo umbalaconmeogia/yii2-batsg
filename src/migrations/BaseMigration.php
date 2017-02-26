@@ -261,4 +261,56 @@ class BaseMigration extends Migration
         $model->saveThrowError();
         return $model;
     }
+
+    /**
+     * Add column and comment on table.
+     * Usage example:
+     * <pre>
+     *   $this->addColumnWithComments('employee', [
+     *     'name' => $this->text(), // Without specifying column comment.
+     *     'age' => [$this->integer(), 'Age'], // With specifying column comment.
+     *   ]);
+     * </pre>
+     * @param string $table Table name.
+     * @param string[] $columns The columns information in two types: name => definition or name => [definition, comment]
+     */
+    protected function addColumnsWithComment($table, $columns)
+    {
+        // Prepare columns' definition and comment information.
+        $definitions = [];
+        $comments = [];
+        foreach ($columns as $columnName => $info) {
+            if (is_array($info)) {
+                $definitions[$columnName] = $info[0];
+                $comments[$columnName] = $info[1];
+            } else {
+                $definitions[$columnName] = $info;
+            }
+        }
+
+        // Add columns.
+        foreach ($definitions as $column => $type) {
+            $this->addColumn($table, $column, $type);
+        }
+
+        // Add comments.
+        foreach ($comments as $column => $comment) {
+            $this->addCommentOnColumn($table, $column, $comment);
+        }
+    }
+
+    /**
+     * Drop list of columns.
+     * @param string $table
+     * @param string[] $columns
+     */
+    protected function dropColumns($table, $columns)
+    {
+        if (!is_array($columns)) {
+            $columns = [$columns];
+        }
+        foreach ($columns as $column) {
+            $this->dropColumn($table, $column);
+        }
+    }
 }

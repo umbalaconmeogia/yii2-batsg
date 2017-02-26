@@ -19,9 +19,33 @@ class HRandom
      */
     const CHARACTER_SET_ALPHABET_DIGIT = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
+    /**
+     * @var string
+     */
     const CHARACTER_SET_ALPHABET_ONLY = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
+    /**
+     * @var string
+     */
     const CHARACTER_SET_DIGIT_ONLY = '0123456789';
+
+    /**
+     * Specify random string character case as lowercase.
+     * @var integer
+     */
+    const CHARACTER_CASE_LOWER = -1;
+
+    /**
+     * Specify random string character case keeping its upper/lower case.
+     * @var integer
+     */
+    const CHARACTER_CASE_ANY = 0;
+
+    /**
+     * Specify random string character case as upper.
+     * @var integer
+     */
+    const CHARACTER_CASE_UPPER = 1;
 
     /**
      * Generate a HRandom password with specified length.

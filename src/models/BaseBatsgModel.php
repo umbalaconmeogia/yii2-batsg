@@ -2,8 +2,11 @@
 namespace batsg\models;
 
 use Yii;
+use yii\base\Model;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveQuery;
+use yii\helpers\ArrayHelper;
 
 /**
  * Model that has field $id, $data_status, $created_at, $created_by, $update_time, $updated_by.
@@ -17,6 +20,7 @@ use yii\behaviors\TimestampBehavior;
  *
  * @property string $createdAt Created date time.
  * @property string $updatedAt Created date time.
+ * @property string $dataStatusStr
  */
 class BaseBatsgModel extends BaseModel
 {
@@ -39,7 +43,7 @@ class BaseBatsgModel extends BaseModel
     public function behaviors()
     {
         return [
-            BlameableBehavior::className(),
+//             BlameableBehavior::className(),
             TimestampBehavior::className(),
         ];
     }
@@ -156,6 +160,35 @@ class BaseBatsgModel extends BaseModel
             $this->id = $this->generateId((new \ReflectionClass($this))->getShortName() . '-');
         }
         return $result;
+    }
+
+    /**
+     * Add <em>data_status <> 9</em> (not deleted) condition to a query.
+     * @param ActiveQuery $query
+     */
+    public static function addWhereNotDeleted(ActiveQuery $query)
+    {
+        $query->andWhere(['<>', static::tableName() . '.data_status', self::DATA_STATUS_DELETE]);
+    }
+
+    /**
+     * @return string
+     */
+    public function getDataStatusStr()
+    {
+        return ArrayHelper::getValue(static::dataStatusOptionArr(), $this->data_status);
+    }
+
+    /**
+     * @return string[]
+     */
+    public static function dataStatusOptionArr()
+    {
+        return [
+            self::DATA_STATUS_NEW => '新規',
+            self::DATA_STATUS_UPDATE => '変更',
+            self::DATA_STATUS_DELETE => '削除',
+        ];
     }
 }
 ?>
