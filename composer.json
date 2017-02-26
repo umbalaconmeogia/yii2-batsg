@@ -5,12 +5,11 @@
         {
             "name": "Tran Trung Thanh",
             "role": "Developer"
-        },
+        }
     ],
     "autoload": {
-        "psr-4": {
-            "batsg\\": "src/"
-        }
+        "psr-4": {"batsg\\": "src/"}
     },
+	"keywords": ["yii2", "utility"],
 	"license": "MIT"
 }
