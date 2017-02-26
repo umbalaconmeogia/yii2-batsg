@@ -1,4 +1,16 @@
 {
     "name": "umbalaconmeogia/yii2-batsg",
-	"description": "My best practice and my libraries when using yii2 framework."
+	"description": "My best practice and my libraries when using yii2 framework.",
+    "authors": [
+        {
+            "name": "Tran Trung Thanh",
+            "role": "Developer"
+        },
+    ],
+    "autoload": {
+        "psr-4": {
+            "batsg\\": "src/"
+        }
+    },
+	"license": "MIT"
 }
