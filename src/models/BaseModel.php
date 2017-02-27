@@ -176,4 +176,20 @@ class BaseModel extends \yii\db\ActiveRecord
         }
         return $result;
     }
+    
+    /**
+     * Find one object that match $condition.
+     * If not exist, create new one with specified condition.
+     * @param array  $condition
+     * @return \batsg\models\BaseModel
+     */
+    public static function findOneCreateNew($condition)
+    {
+        $result = static::findOne($condition);
+        if (!$result) {
+            $result = \Yii::createObject(static::className());
+            \Yii::configure($result, $condition);
+        }
+        return $result;
+    }
 }
