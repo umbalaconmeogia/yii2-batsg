@@ -147,9 +147,9 @@ class BaseMigration extends Migration
         $columns = [
             $this->primaryKeyColumnName => $this->string(),
             'data_status' => $this->integer()->defaultValue(1),
-            'created_by' => $this->string(),
+            'created_by' => $this->integer(),
             'created_at' => $this->integer(),
-            'updated_by' => $this->string(),
+            'updated_by' => $this->integer(),
             'updated_at' => $this->integer(),
         ];
         return $columns;

@@ -32,6 +32,7 @@ class BaseModel extends \yii\db\ActiveRecord
     /**
      * Log error of this model.
      * @param string $message The message to be exported first.
+     * @param string $category
      */
     public function logError($message = NULL, $category = 'application')
     {
@@ -44,25 +45,30 @@ class BaseModel extends \yii\db\ActiveRecord
 
     /**
      * Save this model, write error to log if error occurs.
+     * @param string $errorMessage
      * @return boolean
      */
-    public function saveLogError()
+    public function saveLogError($errorMessage = NULL)
     {
         $result = $this->save();
         if (!$result) {
-            $this->logError();
+            $this->logError($errorMessage);
         }
         return $result;
     }
 
     /**
      * Save this model, write error to log and throw exception if error occurs.
-     * @throws Exception
+     * @param string $errorMessage
+     * @throws \Exception
      */
-    public function saveThrowError()
+    public function saveThrowError($errorMessage = NULL)
     {
-        if (!$this->saveLogError()) {
-            throw new \Exception("Error while saving " . $this->toString());
+        if ($errorMessage === NULL) {
+            $errorMessage = "Error while saving " . $this->toString();
+        }
+        if (!$this->saveLogError($errorMessage)) {
+            throw new \Exception($errorMessage);
         }
     }
 
