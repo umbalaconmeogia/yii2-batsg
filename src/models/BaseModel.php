@@ -198,4 +198,27 @@ class BaseModel extends \yii\db\ActiveRecord
         }
         return $result;
     }
+
+  /**
+   * Compare this model and other model by specified $field.
+   * @param BaseModel $other
+   * @param string $field
+   * @param integer $direction
+   * @return int If $direction = 1, return -1 if this model is "smaller", 0 if two are equal or 1 if this model is "larger".
+   *             If $direction = -1, the result is inversed.
+   */
+  public function compare(BaseModel $other, $fields, $direction = 1)
+  {
+	  if (!is_array($fields)) {
+		  $fields = array($fields);
+		}
+		$result = 0;
+		foreach ($fields as $field) {
+		  if ($this->$field != $other->$field) {
+				$result = $this->$field < $other->$field ? -1 : 1;
+				break;
+			}
+		}
+    return $result * $direction;
+  }
 }

@@ -19,6 +19,13 @@ created_at | int | Created timestamp. Set automatically.
 updated_by | int | Update user id. Set automatically.
 updated_at | int | Updated timestamp. Set automatically.
 
+
+## Install yii2-batsg into your project.
+```php
+composer require umbalaconmeogia/yii2-batsg
+```
+
+Below is deprecated.
 ## Gii modification
 
 * File `vendor/yiisoft/yii2-gii/generators/model/default/model.php`
