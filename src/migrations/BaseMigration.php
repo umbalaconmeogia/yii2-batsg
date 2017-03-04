@@ -133,8 +133,8 @@ class BaseMigration extends Migration
         } catch (\Exception $e) {
             if ($tableCreated) {
                 $this->dropTable($table);
-                throw $e;
             }
+            throw $e;
         }
     }
 
@@ -206,7 +206,7 @@ class BaseMigration extends Migration
      * @param string $refTable
      * @param string $refColumn
      */
-    protected function addForeignKeys($table, $columns, $refTable = NULL, $refColumn = NULL)
+    protected function addForeignKeys($table, $columns, $refTable = NULL, $refColumn = 'id')
     {
         if ($refTable != NULL) {
             $columns = [[$columns, $refTable, $refColumn]];

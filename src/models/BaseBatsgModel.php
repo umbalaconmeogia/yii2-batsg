@@ -34,7 +34,7 @@ class BaseBatsgModel extends BaseModel
      * set $genUuid = FALSE.
      * @var boolean
      */
-    public $genUuid = TRUE;
+    public $genUuid = FALSE;
 
     /**
      * {@inheritDoc}
