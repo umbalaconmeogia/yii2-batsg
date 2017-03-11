@@ -207,7 +207,7 @@ class BaseModel extends \yii\db\ActiveRecord
    * @return int If $direction = 1, return -1 if this model is "smaller", 0 if two are equal or 1 if this model is "larger".
    *             If $direction = -1, the result is inversed.
    */
-  public function compare(BaseModel $other, $fields, $direction = 1)
+  public function cmp(BaseModel $other, $fields, $direction = 1)
   {
 	  if (!is_array($fields)) {
 		  $fields = array($fields);

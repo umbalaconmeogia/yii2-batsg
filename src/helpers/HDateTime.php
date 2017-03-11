@@ -244,6 +244,30 @@ class HDateTime
   }
 
   /**
+   * @return string
+   */
+  public function toDateStr()
+  {
+    return $this->toString(self::FORMAT_DATE);
+  }
+
+  /**
+   * @return string
+   */
+  public function toDateTimeStr()
+  {
+    return $this->toString(self::FORMAT_DATETIME);
+  }
+
+  /**
+   * @return string
+   */
+  public function toTimeStr()
+  {
+    return $this->toString(self::FORMAT_TIME);
+  }
+
+  /**
    * @param string $format The format string as used in date().
    * @return string
    */
@@ -390,6 +414,29 @@ class HDateTime
   public function nextNSecond($n, $modify = FALSE)
   {
     return $this->add(0, 0, 0, 0, 0, $n, $modify);
+  }
+
+  /**
+   * Compare two HDateTime.
+   * @param HDateTime|string $a
+   * @param HDateTime|strinng $b
+   * @return number -1 if $a < $b, 0 if two equal, +1 if $a > $b
+   */
+  public static function cmp($a, $b)
+  {
+    if (!($a instanceof HDateTime)) {
+      $a = HDateTime::createFromString($a);
+    }
+    if (!($b instanceof HDateTime)) {
+      $b = HDateTime::createFromString($b);
+    }
+    $result = 0;
+    if ($a->_timestamp < $b->_timestamp) {
+      $result = -1;
+    } else if ($a->_timestamp > $b->_timestamp) {
+      $result = 1;
+    }
+    return $result;
   }
 }
 ?>
