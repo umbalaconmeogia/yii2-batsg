@@ -1,5 +1,6 @@
 {
     "name": "umbalaconmeogia/yii2-batsg",
+	"type": "yii2-extension",
 	"description": "My best practice and my libraries when using yii2 framework.",
     "authors": [
         {
@@ -11,5 +12,6 @@
         "psr-4": {"batsg\\": "src/"}
     },
 	"keywords": ["yii2", "utility"],
+	"require-dev": [],
 	"license": "MIT"
 }

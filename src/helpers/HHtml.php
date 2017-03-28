@@ -44,7 +44,7 @@ class HHtml
 	
 	public static function datetimeLocalValue($dateTime)
     {
-        strftime(DATE_W3C, strtotime($dateTime));
+        return date('Y-m-d\TH:i:s', strtotime($dateTime));
 	}
 
 }
