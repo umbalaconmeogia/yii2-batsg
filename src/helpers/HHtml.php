@@ -41,5 +41,10 @@ class HHtml
         }
         return join($separator, $html);
     }
+	
+	public static function datetimeLocalValue($dateTime)
+    {
+        strftime(DATE_W3C, strtotime($dateTime));
+	}
 
 }
