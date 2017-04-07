@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit bootstrap="./tests/bootstrap.php"
-    
          colors="true"
          convertErrorsToExceptions="true"
          convertNoticesToExceptions="true"
-         convertWarningsToExceptions="true">
+         convertWarningsToExceptions="true"
+         mapTestClassNameToCoveredClassName="true"
+         forceCoversAnnotation="true">
 
     <testsuites>
         <testsuite name="yii2-batsg tests">
-            <directory suffix=".php">tests/</directory>
+            <directory suffix=".php">tests/helpers/</directory>
         </testsuite>
     </testsuites>
 

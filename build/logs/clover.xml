@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1491269440">
-  <project timestamp="1491269440">
+<coverage generated="1491525738">
+  <project timestamp="1491525738">
     <package name="batsg\helpers">
       <file name="C:\data\projects.it\yii2-batsg\src\helpers/HDateTime.php">
         <class name="HDateTime" namespace="batsg\helpers">
