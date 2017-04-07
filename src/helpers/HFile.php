@@ -48,7 +48,6 @@ class HFile
                 }
             }
         }
-        \Yii::info("remove {$directory}");
         rmdir($directory);
     }
 
