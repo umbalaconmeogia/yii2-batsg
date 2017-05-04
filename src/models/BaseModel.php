@@ -50,6 +50,9 @@ class BaseModel extends \yii\db\ActiveRecord
      */
     public function saveLogError($errorMessage = NULL)
     {
+        if ($errorMessage === NULL) {
+            $errorMessage = "Error while saving " . $this->toString();
+        }
         $result = $this->save();
         if (!$result) {
             $this->logError($errorMessage);
