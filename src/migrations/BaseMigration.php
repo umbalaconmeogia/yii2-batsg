@@ -65,7 +65,7 @@ class BaseMigration extends Migration
             $columns = $columns ? array_map('trim', explode(',', $columns)) : [];
         }
         $columns[] = $suffix;
-        return join('_', array_merge([$table], $columns));
+        return join('-', array_merge([$table], $columns));
     }
 
     // TODO: Should run create db table in try {} catch.
