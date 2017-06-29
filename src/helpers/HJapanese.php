@@ -269,6 +269,26 @@ class HJapanese
   }
 
   /**
+   * Convert string from half width to full width.
+   * @param string $str
+   * @return string
+   */
+  public static function halfWidthToFullWidth($str)
+  {
+    return mb_convert_kana($str, 'AK');
+  }
+
+  /**
+   * Convert string from half width to full width.
+   * @param string $str
+   * @return string
+   */
+  public static function fullWidthToHalfWidth($str)
+  {
+    return mb_convert_kana($str, 'ak');
+  }
+
+  /**
    * Convert string from Hiragana to Kanatakan.
    * @param string $str
    * @return string
