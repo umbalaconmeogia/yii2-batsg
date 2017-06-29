@@ -8,9 +8,9 @@ class HArray
 {
     /**
      * Check if two arrays contain same value set.
-     * 
-     * @param array $arr1            
-     * @param array $arr2            
+     *
+     * @param array $arr1
+     * @param array $arr2
      * @return boolean TRUE if two arrays contain same value set.
      */
     public static function equal($arr1, $arr2)
@@ -20,7 +20,7 @@ class HArray
 
     /**
      * Flatten elements of a multi-dimension array.
-     * 
+     *
      * @param mixed $arr
      *            Anything (normal object, or array).
      * @return array
@@ -32,7 +32,7 @@ class HArray
                 $arr
             );
         }
-        
+
         $result = array();
         foreach ($arr as $element) {
             // Merge element to $result if it is an array.
@@ -43,10 +43,10 @@ class HArray
                 $result[] = $element;
             }
         }
-        
+
         return $result;
     }
-    
+
     /**
      * Split a string into array.
      * @param string $delimiter

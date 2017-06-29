@@ -18,11 +18,11 @@ class HJapaneseAddress
     const SPLIT_PATTERN_AZAMEI = '([^0-9-]*)';
     const SPLIT_PATTERN_BANCHI = '([0-9-]*)';
     const SPLIT_PATTERN_JUUKYOHYOUJI = '(.*)';
-    
+
     /**
      * Split a address into part.
      * @param string $address The address to be splitted.
-     * @return string[] An array with the keys are ADDRESS_PART_XXX, and the values are the appropriate part in the address. 
+     * @return string[] An array with the keys are ADDRESS_PART_XXX, and the values are the appropriate part in the address.
      */
     public static function splitAddress($address)
     {

@@ -2,8 +2,8 @@
 
 namespace batsg\models;
 
-use Yii;
 use batsg\helpers\HRandom;
+use Yii;
 
 class BaseModel extends \yii\db\ActiveRecord
 {
@@ -185,7 +185,7 @@ class BaseModel extends \yii\db\ActiveRecord
         }
         return $result;
     }
-    
+
     /**
      * Find one object that match $condition.
      * If not exist, create new one with specified condition.

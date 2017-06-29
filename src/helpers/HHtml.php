@@ -41,7 +41,7 @@ class HHtml
         }
         return join($separator, $html);
     }
-	
+
 	public static function datetimeLocalValue($dateTime)
     {
         return date('Y-m-d\TH:i:s', strtotime($dateTime));

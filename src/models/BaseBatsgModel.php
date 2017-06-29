@@ -3,7 +3,6 @@ namespace batsg\models;
 
 use Yii;
 use yii\base\Model;
-use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\helpers\ArrayHelper;

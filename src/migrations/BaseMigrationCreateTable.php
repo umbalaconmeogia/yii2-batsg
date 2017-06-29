@@ -2,7 +2,6 @@
 namespace batsg\migrations;
 
 use yii\db\Migration;
-use yii\db\ActiveRecord;
 
 /**
  * Base class for create a table.

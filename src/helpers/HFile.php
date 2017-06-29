@@ -18,8 +18,8 @@ class HFile
 
     /**
      * Remove directory (recursively).
-     * 
-     * @param string $directory            
+     *
+     * @param string $directory
      * @param boolean $checkDirExistance
      *            If TRUE, throw error if $directory does not exist.
      *            @throw InvalidArgumentException if $checkDirExistance is TRUE and the directory does not exist.
@@ -72,12 +72,12 @@ class HFile
         }
         return $result;
     }
-    
+
     /**
      * List files inside specified path (exclude .
      * and ..).
-     * 
-     * @param string $directory            
+     *
+     * @param string $directory
      * @return array of filename => path
      */
     public static function listFile($directory)
@@ -97,8 +97,8 @@ class HFile
     /**
      * List directories inside specified path (exclude .
      * and ..).
-     * 
-     * @param string $directory            
+     *
+     * @param string $directory
      * @return array of dirname => path
      */
     public static function listDir($directory)
@@ -117,7 +117,7 @@ class HFile
 
     /**
      * Get the file extension.
-     * 
+     *
      * @param string $path
      *            Path to the file name.
      * @return string File extension (after the last dot .)
@@ -131,7 +131,7 @@ class HFile
 
     /**
      * Get the file basename.
-     * 
+     *
      * @param string $path
      *            Path to the file name.
      * @return string File basename (before the last dot .)

@@ -33,8 +33,8 @@ class HExcel
     $n = $n*26 + ord($a[$i]) - 0x40;
     return $n - 1 + $startIndex;
   }
-  
-  
+
+
   /**
    * Convert Excel datetime to PHP timestamp.
    * @param float $xlDate Excel date time.

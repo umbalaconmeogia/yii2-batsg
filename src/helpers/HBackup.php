@@ -64,9 +64,9 @@ class HBackup {
    */
   public static function fullQualifiedModelClassName($className)
   {
-      return (strpos($className, '\\') === FALSE) ? "app\\models\\$className" : $className; 
+      return (strpos($className, '\\') === FALSE) ? "app\\models\\$className" : $className;
   }
-  
+
   /**
    * Try to get all model classes in app/models
    * @return string[]

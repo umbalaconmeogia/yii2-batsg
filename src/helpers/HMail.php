@@ -1,8 +1,6 @@
 <?php
 namespace batsg\helpers;
 
-
-
 /**
  * Helper class for Mail.
  */

@@ -9,7 +9,7 @@ class HJapanese
   const DATETIME_HOUR = '時';
   const DATETIME_MINUTE = '分';
   const DATETIME_SECOND = '秒';
-  
+
   /**
    * @var array Name of week days (as value of date('w'): 0 for Sunday, 1 for Monday, etc).
    */
@@ -21,11 +21,11 @@ class HJapanese
   public static $fullWidthDigits = array(
     '０', '１', '２', '３', '４', '５', '６', '７', '８', '９'
   );
-  
+
   public static $fullWidthDigitsToHalfWidth = array(
     '０' => 0, '１' => 1, '２' => 2, '３' => 3, '４' => 4, '５' => 5, '６' => 6, '７' => 7, '８' => 8, '９' => 9
   );
-  
+
   /**
    * Replace all full width digits by half with digits in a string.
    * @param mixed $subject a string or array of string to be searched and replaced.
@@ -36,7 +36,7 @@ class HJapanese
     $subject = str_replace(self::$fullWidthDigits, self::$halfWidthDigits, $subject);
     return $subject;
   }
-  
+
   /**
    * Replace all half width digits by full with digits in a string.
    * @param mixed $subject a string or array of string to be searched and replaced.
@@ -47,7 +47,7 @@ class HJapanese
     $subject = str_replace(self::$halfWidthDigits, self::$fullWidthDigits, $subject);
     return $subject;
   }
-  
+
   /**
    * Parse date time from a string.
    * @param string $dateTime String that contain 年, 月, 日, 時, 分, 秒
@@ -119,7 +119,7 @@ class HJapanese
    * Get the Japanese era calendar year of a specified year.
    * For example, from 1980 to 昭和 and 55.
    * Currently, this is not sure to work with the year before 1970.
-   * 
+   *
    * @param HDateTime $dateTime
    * @param string $eraName
    * @param int $yearNumber
@@ -148,20 +148,39 @@ class HJapanese
 
   /**
    * 和暦変換用の関数: 平成xx年yy月zz日
-   * @param HDateTime $hDateTime
-   * @param string $mdFormat the format string for month and day. For example "m月d日" or "n月j日"
+   * @param mixed $dateTime string or HDateTime
+   * @param string $monthDayFormat the format string for month and day. For example "m月d日" or "n月j日"
+   * @param string $weekDayFormat "(w)" or "w曜日"
    * @return string
    */
-  public static function toJapaneseCalendar($dateTime, $mdFormat = 'm月d日')
+  public static function toJapaneseCalendar($dateTime, $monthDayFormat = 'm月d日', $weekDayFormat = NULL)
   {
-    $japaneseYear = self::getJapaneseYear($dateTime, $eraName, $yearNumber);
-    if ($japaneseYear) {
-      return $japaneseYear . $dateTime->toString($mdFormat);
-    } else {
-      return $dateTime->toString('Y/m/d');
-    }
+      $result = NULL;
+
+      if (!$dateTime instanceof HDateTime) {
+          $dateTime = HDateTime::createFromString($dateTime);
+      }
+      $japaneseYear = self::getJapaneseYear($dateTime, $eraName, $yearNumber);
+      if ($japaneseYear) {
+          $result = $japaneseYear . $dateTime->toString($monthDayFormat);
+          if ($weekDayFormat) {
+              $result .= str_replace('w', self::$weekDays[$dateTime->getWDay()], $weekDayFormat);
+          }
+      } else {
+          $result = $dateTime->toString('Y/m/d');
+      }
+      return $result;
   }
-  
+
+  public static function japaneseWeekDay($dateTime)
+  {
+      if (!$dateTime instanceof HDateTime) {
+          $dateTime = HDateTime::createFromString($dateTime);
+      }
+      $result = self::$weekDays[$dateTime->getWDay()];
+      return $result;
+  }
+
   /**
    * Split a string to array.
    * This is like str_split, but work with UTF8 string.
@@ -177,7 +196,7 @@ class HJapanese
     }
     return $result;
   }
-  
+
   /**
    * Implementation of mb_str_replace based on the code of sakai at d4k dot net.
    * (http://php.net/manual/ja/ref.mbstring.php)
@@ -215,7 +234,7 @@ class HJapanese
   {
     return preg_match("/[ぁ-ゞ]+/u", $str);
   }
-  
+
   /**
    * Check if a string contains Katakana.
    * @see http://pentan.info/php/reg/is_kana.html
@@ -237,7 +256,7 @@ class HJapanese
   {
       return preg_match("/^[ぁ-ゞ]+$/u", $str);
   }
-  
+
   /**
    * Check if a string contains only Katakana.
    * @see http://pentan.info/php/reg/is_kana.html
@@ -248,7 +267,7 @@ class HJapanese
   {
       return preg_match("/^[ァ-ヾ]+$/u", $str);
   }
-  
+
   /**
    * Convert string from Hiragana to Kanatakan.
    * @param string $str
@@ -258,7 +277,7 @@ class HJapanese
   {
     return mb_convert_kana($str, 'C');
   }
-  
+
   /**
    * Convert string from Katakana to Hiragana.
    * @param string $str
@@ -268,7 +287,7 @@ class HJapanese
   {
     return mb_convert_kana($str, 'c');
   }
-  
+
   /**
    * Call to mb_str_len with UTF8 encoding.
    * @param string $str
