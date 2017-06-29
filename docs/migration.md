@@ -36,4 +36,4 @@ class m170530_031534_create_login_user_table extends BaseMigrationCreateTable
     }
 }
 ?>
-```php
+```
