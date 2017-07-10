@@ -98,7 +98,7 @@ trait LoginUserTrait
      */
     public function beforeSave($insert)
     {
-        \Yii::log('LoginUserTrait#beforeSave()');
+        \Yii::trace('LoginUserTrait#beforeSave()');
         $result = parent::beforeSave($insert);
         if ($result && $this->isNewRecord) {
             // Set auth_key
