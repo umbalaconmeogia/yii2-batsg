@@ -163,11 +163,13 @@ class BaseMigration extends Migration
      */
     protected function addComments($table, $tableComment = NULL, $columnComments = [])
     {
-        foreach ($columnComments as $column => $comment) {
-            $this->addCommentOnColumn($table, $column, $comment);
-        }
-        if ($tableComment) {
-            $this->addCommentOnTable($table, $tableComment);
+        if (\Yii::$app->db->driverName != 'sqlite') {
+            foreach ($columnComments as $column => $comment) {
+                $this->addCommentOnColumn($table, $column, $comment);
+            }
+            if ($tableComment) {
+                $this->addCommentOnTable($table, $tableComment);
+            }
         }
     }
 
@@ -208,21 +210,23 @@ class BaseMigration extends Migration
      */
     protected function addForeignKeys($table, $columns, $refTable = NULL, $refColumn = 'id')
     {
-        if ($refTable != NULL) {
-            $columns = [[$columns, $refTable, $refColumn]];
-        }
-        foreach ($columns as $columnReference) {
-            $column = $columnReference[0];
-            $refTable = $columnReference[1];
-            $refColumn = (isset($columnReference[2]) && $columnReference[2]) ?
-                   $columnReference[2] : $this->primaryKeyColumnName;
-            echo "$column, $refTable, $refColumn\n";
-            // Create foreign key.
-            $this->addForeignKey(self::constraintNameForeignKey($table, $column),
-                $table, $column, $refTable, $refColumn);
-            // Create index for foreign key column.
-            $this->createIndex(self::constraintNameIndex($table, $column),
-                $table, $column);
+        if (\Yii::$app->db->driverName != 'sqlite') { // SQLite does not support foreign key this way. Set REFERENCES in column definition.
+            if ($refTable != NULL) {
+                $columns = [[$columns, $refTable, $refColumn]];
+            }
+            foreach ($columns as $columnReference) {
+                $column = $columnReference[0];
+                $refTable = $columnReference[1];
+                $refColumn = (isset($columnReference[2]) && $columnReference[2]) ?
+                       $columnReference[2] : $this->primaryKeyColumnName;
+                echo "$column, $refTable, $refColumn\n";
+                // Create foreign key.
+                $this->addForeignKey(self::constraintNameForeignKey($table, $column),
+                    $table, $column, $refTable, $refColumn);
+                // Create index for foreign key column.
+                $this->createIndex(self::constraintNameIndex($table, $column),
+                    $table, $column);
+            }
         }
     }
 

@@ -190,14 +190,18 @@ class BaseModel extends \yii\db\ActiveRecord
      * Find one object that match $condition.
      * If not exist, create new one with specified condition.
      * @param array  $condition
+     * @param boolean $saveDb Save record into DB or not incase create new.
      * @return \batsg\models\BaseModel
      */
-    public static function findOneCreateNew($condition)
+    public static function findOneCreateNew($condition, $saveDb = FALSE)
     {
         $result = static::findOne($condition);
         if (!$result) {
             $result = \Yii::createObject(static::className());
             \Yii::configure($result, $condition);
+            if ($saveDb) {
+                $result->saveThrowError();
+            }
         }
         return $result;
     }
