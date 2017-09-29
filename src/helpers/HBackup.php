@@ -4,7 +4,24 @@ namespace batsg\helpers;
 use \Yii;
 
 /**
- * Utility function for backup and migration.
+ * Utility function for backup and data migration.
+ * It can import from and export data to CSV files.
+ * <p />
+ * For exporting, specify models that connects to DB tables and all tables relate to that models will be exported.
+ * <p />
+ * For importing, you can import new records or update records using specified field as key value to determine unique records.
+ * <p />
+ * The format for importing
+ * <p /> 
+ * <pre>
+ *   (Line 1)*,TableName,update,UpdateKeyField
+ *   (Line 2)Field names, seperated by commas.
+ *   (Line 3)Field values of each record.
+ *   (Line x)Same as line 3.
+ *   
+ *   Next table's data continues.
+ * </pre>
+ * The keyword "update" and UpdateKeyField in Line 1 may be ommited incase of inserting new data.
  */
 class HBackup {
 
@@ -160,17 +177,34 @@ class HBackup {
 
   public static function setForeignKeyCheck($value)
   {
-    Yii::$app->db->createCommand("SET FOREIGN_KEY_CHECKS={$value};")->execute();
+    if (!self::isSqlite()) {
+      Yii::$app->db->createCommand("SET FOREIGN_KEY_CHECKS={$value};")->execute();
+    }
   }
 
+  /**
+   * Truncate a table.
+   * @param unknown $tableName
+   * @param string $setForeignKeyCheck
+   */
   public static function truncate($tableName, $setForeignKeyCheck = FALSE)
   {
     if ($setForeignKeyCheck) {
       self::setForeignKeyCheck(0);
     }
-    Yii::$app->db->createCommand("TRUNCATE TABLE {$tableName};")->execute();
+    $command = self::isSqlite() ? "DELETE FROM {$tableName};" : "TRUNCATE TABLE {$tableName};";
+    Yii::$app->db->createCommand($command)->execute();
   }
 
+  /**
+   * Check if DB is sqlite.
+   * @return boolean
+   */
+  private static function isSqlite()
+  {
+      return \Yii::$app->db->driverName == 'sqlite';
+  }
+  
   /**
    * Import data from csv file created by exportDbToCsv().
    *
@@ -232,6 +266,7 @@ class HBackup {
       $transaction->rollback(); // Rolback transaction.
       throw $e;
     }
+
     self::setForeignKeyCheck(1);
   }
 

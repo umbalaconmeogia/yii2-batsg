@@ -219,7 +219,6 @@ class BaseMigration extends Migration
                 $refTable = $columnReference[1];
                 $refColumn = (isset($columnReference[2]) && $columnReference[2]) ?
                        $columnReference[2] : $this->primaryKeyColumnName;
-                echo "$column, $refTable, $refColumn\n";
                 // Create foreign key.
                 $this->addForeignKey(self::constraintNameForeignKey($table, $column),
                     $table, $column, $refTable, $refColumn);
@@ -230,6 +229,31 @@ class BaseMigration extends Migration
         }
     }
 
+    /**
+     * Return definition for a column that is a foreign key.
+     * If DB driver is sqlite, this will return definition with REFERENCES constrain,
+     * else it will return $this->integer()->notNull().
+     * TODO: Implement add addForiegnKey, addIndex as after behavior is better than addIndexes.
+     * @return mixed
+     */
+    protected function referenceColumn($refTable, $notNull = TRUE, $refColumn = 'id', $type = 'integer')
+    {
+        if (\Yii::$app->db->driverName == 'sqlite') {
+            $definition = [$type];
+            if ($notNull) {
+                $definition[] = 'NOT NULL';
+            }
+            $definition[] = "REFERENCES {$refTable}(${refColumn})";
+            $result = join(' ', $definition);
+        } else {
+            $result = $this->$type();
+            if ($notNull) {
+                $result = $result->notNull();
+            }
+        }
+        return $result;
+    }
+    
     /**
      * Register model name and parameter before call insertRecord().
      * @param string $modelClassName
