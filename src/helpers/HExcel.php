@@ -46,6 +46,13 @@ class HExcel
     return $row[self::columnAlphabetToNumber($colName, $startIndex)];
   }
 
+  /**
+   * Get value of a column (specified by name) on a row data as number.
+   * @param array $rowValues
+   * @param string $colName
+   * @param integer startIndex from 0 or 1
+   * @return number
+   */
   public static function colValueNum(&$row, $colName, $startIndex = 0)
   {
     $value = $row[self::columnAlphabetToNumber($colName, $startIndex)];
