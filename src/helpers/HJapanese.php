@@ -97,13 +97,23 @@ class HJapanese
 
   /**
    * Convert string from SJIS encoding to UTF8.
-   * @param string $s
-   * @return string
+   * @param string|array $data
+   * @return mixed
    */
-  public static function sjisToUtf8($s)
+  public static function sjisToUtf8($data)
   {
-    return mb_convert_encoding($s, 'UTF-8', 'SJIS');
+      $result = NULL;
+      if (is_array($data)) {
+          foreach ($data as $key => $value) {
+              $data[$key] = mb_convert_encoding($value, 'UTF-8', 'SJIS');
+          }
+          $result = &$data;
+      } else { // Is a string.
+          $result = mb_convert_encoding($data, 'UTF-8', 'SJIS');
+      }
+      return $result;
   }
+
 
   /**
    * Convert string from UTF8 encoding to SJIS.

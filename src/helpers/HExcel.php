@@ -34,6 +34,23 @@ class HExcel
     return $n - 1 + $startIndex;
   }
 
+  /**
+   * Get value of a column (specified by name) on a row data.
+   * @param array $rowValues
+   * @param string $colName
+   * @param integer startIndex from 0 or 1
+   * @return mixed
+   */
+  public static function colValue(&$row, $colName, $startIndex = 0)
+  {
+    return $row[self::columnAlphabetToNumber($colName, $startIndex)];
+  }
+
+  public static function colValueNum(&$row, $colName, $startIndex = 0)
+  {
+    $value = $row[self::columnAlphabetToNumber($colName, $startIndex)];
+    return $value ? $value : 0;
+  }
 
   /**
    * Convert Excel datetime to PHP timestamp.
