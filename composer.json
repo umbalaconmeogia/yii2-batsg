@@ -12,6 +12,5 @@
         "psr-4": {"batsg\\": "src/"}
     },
 	"keywords": ["yii2", "utility"],
-	"require-dev": [],
 	"license": "MIT"
 }
