@@ -1,8 +1,7 @@
 <?php
-namespace batsg\models\traits;
+namespace batsg\models\attrEncrypt;
 
 use \Yii;
-use yii\db\ActiveRecord;
 
 /**
  * Encrypt data saved in database.
