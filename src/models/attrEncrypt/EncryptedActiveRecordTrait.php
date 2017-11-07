@@ -5,6 +5,8 @@ use \Yii;
 
 /**
  * Encrypt data saved in database.
+ * A class that use EncryptedActiveRecordTrait should defined its own $encryptedAttributeDbFields,
+ * that defines mapping between attribute and encription value in db.
  *
  * Model that uses this trait should override its __get() and __set() function as below.
  * <pre>
@@ -18,6 +20,7 @@ use \Yii;
  *   return $this->setterEncryptedField($name, $value);
  * }
  * </pre>
+ *
  * @property string[] attributeEncryptionKeys
  */
 trait EncryptedActiveRecordTrait
@@ -25,6 +28,8 @@ trait EncryptedActiveRecordTrait
     public static $sessinoKeyActiveRecordEncryptionKeys = 'SESSION_KEY_ACTIVE_RECORD_ENCRYPTION_KEYS_4xy3';
 
     private $_attributesEncrypted = [];
+
+//     static protected $encryptedAttributeDbFields;
 
     /**
      * Set attribute encryption keys for ALL models.
@@ -72,7 +77,7 @@ trait EncryptedActiveRecordTrait
      */
     protected function getterEncryptedField($name)
     {
-        if (isset($this->encryptedAttributeDbFields[$name])) {
+        if (isset(static::$encryptedAttributeDbFields[$name])) {
             return $this->__getEncryptedField($name);
         } else {
             return parent::__get($name);
@@ -85,7 +90,7 @@ trait EncryptedActiveRecordTrait
      */
     protected function setterEncryptedField($name, $value)
     {
-        if (isset($this->encryptedAttributeDbFields[$name])) {
+        if (isset(static::$encryptedAttributeDbFields[$name])) {
             $this->__setEncryptedField($name, $value);
         } else {
             parent::__set($name, $value);
@@ -98,7 +103,7 @@ trait EncryptedActiveRecordTrait
     private function __getEncryptedField($name)
     {
         if (!isset($this->_attributesEncrypted[$name])) {
-            $dbField = $this->encryptedAttributeDbFields[$name];
+            $dbField = static::$encryptedAttributeDbFields[$name];
             $this->_attributesEncrypted[$name] = $this->decryptFieldValue($this->$dbField);
         }
         return $this->_attributesEncrypted[$name];
@@ -113,7 +118,7 @@ trait EncryptedActiveRecordTrait
         // Remember value in $_attributeEncrypted to used in __setEncryptedField().
         $this->_attributesEncrypted[$name] = $value;
         // Get the DB field name of the attribute $name
-        $dbField = $this->encryptedAttributeDbFields[$name];
+        $dbField = static::$encryptedAttributeDbFields[$name];
         // Set the DB field value.
         $this->$dbField = $this->encryptFieldValue($value);
     }
@@ -149,5 +154,14 @@ trait EncryptedActiveRecordTrait
             $value = Yii::$app->getSecurity()->decryptByKey($value, $key);
         }
         return $value;
+    }
+
+    /**
+     * Get list of attributes corressponding to encrypted fields.
+     * @return string[]
+     */
+    static protected function encryptedAttributes()
+    {
+        return array_keys(static::$encryptedAttributeDbFields);
     }
 }
