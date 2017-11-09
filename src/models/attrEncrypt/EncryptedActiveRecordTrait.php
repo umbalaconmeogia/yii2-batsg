@@ -5,8 +5,12 @@ use \Yii;
 
 /**
  * Encrypt data saved in database.
+ * <p />
  * A class that use EncryptedActiveRecordTrait should defined its own $encryptedAttributeDbFields,
  * that defines mapping between attribute and encription value in db.
+ * At this time, this is just a simple mapping between the attributed name and the DB field names,
+ * but it need specify type, level of encryption...
+ * <p />
  *
  * Model that uses this trait should override its __get() and __set() function as below.
  * <pre>
