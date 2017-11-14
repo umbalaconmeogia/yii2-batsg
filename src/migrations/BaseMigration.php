@@ -20,6 +20,11 @@ class BaseMigration extends Migration
     private $insertMetaInfo = [];
 
     /**
+     * @var array Each element is an array with keys 'table', 'column', 'refTable', 'refColumn'.
+     */
+    private $_addForeignKeyList = [];
+
+    /**
      * Generate constraint name for primary key.
      * @param string $table Table name.
      * @param string $column Primary column name.
@@ -130,6 +135,7 @@ class BaseMigration extends Migration
             }
 
             $this->addComments($table, NULL, $comments);
+            $this->afterReferenceColumn();
         } catch (\Exception $e) {
             if ($tableCreated) {
                 $this->dropTable($table);
@@ -210,33 +216,35 @@ class BaseMigration extends Migration
      */
     protected function addForeignKeys($table, $columns, $refTable = NULL, $refColumn = 'id')
     {
-        if (\Yii::$app->db->driverName != 'sqlite') { // SQLite does not support foreign key this way. Set REFERENCES in column definition.
-            if ($refTable != NULL) {
-                $columns = [[$columns, $refTable, $refColumn]];
-            }
-            foreach ($columns as $columnReference) {
-                $column = $columnReference[0];
-                $refTable = $columnReference[1];
-                $refColumn = (isset($columnReference[2]) && $columnReference[2]) ?
-                       $columnReference[2] : $this->primaryKeyColumnName;
-                // Create foreign key.
+        if ($refTable != NULL) {
+            $columns = [[$columns, $refTable, $refColumn]];
+        }
+        foreach ($columns as $columnReference) {
+            $column = $columnReference[0];
+            $refTable = $columnReference[1];
+            $refColumn = (isset($columnReference[2]) && $columnReference[2]) ?
+                   $columnReference[2] : $this->primaryKeyColumnName;
+            // Create foreign key.
+            if (\Yii::$app->db->driverName != 'sqlite') { // SQLite does not support foreign key this way. Set REFERENCES in column definition.
                 $this->addForeignKey(self::constraintNameForeignKey($table, $column),
                     $table, $column, $refTable, $refColumn);
-                // Create index for foreign key column.
-                $this->createIndex(self::constraintNameIndex($table, $column),
-                    $table, $column);
             }
+            // Create index for foreign key column.
+            $this->createIndex(self::constraintNameIndex($table, $column),
+                $table, $column);
         }
     }
 
     /**
      * Return definition for a column that is a foreign key.
+     * <p />
      * If DB driver is sqlite, this will return definition with REFERENCES constrain,
      * else it will return $this->integer()->notNull().
-     * TODO: Implement add addForiegnKey, addIndex as after behavior is better than addIndexes.
+     * <p />
+     * This method also prepares information for addForeignKey and addIndex, which are invoked inside createTableWithExtraFields()
      * @return mixed
      */
-    protected function referenceColumn($refTable, $notNull = TRUE, $refColumn = 'id', $type = 'integer')
+    protected function referenceColumn($refTable, $notNull = TRUE, $column = NULL, $refColumn = 'id', $type = 'integer')
     {
         if (\Yii::$app->db->driverName == 'sqlite') {
             $definition = [$type];
@@ -251,13 +259,37 @@ class BaseMigration extends Migration
                 $result = $result->notNull();
             }
         }
+
+        // Set foreign key and index information.
+        if ($column == NULL) {
+            $column = "{$refTable}_id";
+        }
+        $this->_addForeignKeyList[] = [
+            'table' => $this->table,
+            'column' => $column,
+            'refTable' => $refTable,
+            'refColumn' => $refColumn,
+        ];
+
         return $result;
     }
-    
+
+    /**
+     * Method should be called after using of referenceColumn().
+     * Usullly called in createTableWithExtraFields().
+     */
+    protected function afterReferenceColumn()
+    {
+        foreach ($this->_addForeignKeyList as $param) {
+            $this->addForeignKeys($param['table'], $param['column'], $param['refTable'], $param['refColumn']);
+        }
+    }
+
     /**
      * Register model name and parameter before call insertRecord().
      * @param string $modelClassName
      * @param string ...$fieldNames
+     * @deprecated Do not insert data in migration.
      */
     protected function registerInsertMeta()
     {
@@ -271,6 +303,7 @@ class BaseMigration extends Migration
      * @param string $modelClassName
      * @param mixed ...$fieldValue
      * @return ActiveRecord
+     * @deprecated Do not insert data in migration.
      */
     protected function insertRecord()
     {
