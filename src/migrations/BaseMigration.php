@@ -242,6 +242,12 @@ class BaseMigration extends Migration
      * else it will return $this->integer()->notNull().
      * <p />
      * This method also prepares information for addForeignKey and addIndex, which are invoked inside createTableWithExtraFields()
+     *
+     * @param string $refTable Table to be referenced.
+     * @param boolean $notNull NOT NULL option.
+     * @param string $column The column of the current table that is used as foreign key. If null, then it is set as {$refTable}_id
+     * @param string $refColumn Default to "id"
+     * @param string $type Default to "integer"
      * @return mixed
      */
     protected function referenceColumn($refTable, $notNull = TRUE, $column = NULL, $refColumn = 'id', $type = 'integer')
