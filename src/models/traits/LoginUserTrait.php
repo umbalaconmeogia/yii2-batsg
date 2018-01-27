@@ -6,13 +6,11 @@ use Yii;
 /**
  * @property string $password_encryption
  * @property string $password
+ * @property string $plainPassword
  */
 trait LoginUserTrait
 {
-    /**
-     * @var string
-     */
-    public $password;
+    public $plainPassword;
 
     /**
      * Finds an identity by the given ID.
@@ -78,7 +76,8 @@ trait LoginUserTrait
      */
     public function setPassword($password)
     {
-        $this->password_encryption = \Yii::$app->getSecurity()->generatePasswordHash($password);
+        $this->plainPassword = $password;
+        $this->password_encryption = \Yii::$app->security->generatePasswordHash($password);
     }
 
     /**

@@ -182,7 +182,10 @@ class BaseMigration extends Migration
     /**
      * Create multiple indexes.
      * @param string $table
-     * @param string|string[]|string[] $columnSets
+     * @param string|string[]|string[] $columnSets Column to be created index. It may be
+     *                                             + string (index for a single column)
+     *                                             + string array (multiple indexes are created for multiple columns).
+     *                                             + array of string array: Create multiple indexes, each index is for a single or set of columns.
      */
     protected function createIndexes($table, $columnSets)
     {

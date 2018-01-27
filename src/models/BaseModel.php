@@ -228,4 +228,28 @@ class BaseModel extends \yii\db\ActiveRecord
 		}
     return $result * $direction;
   }
+
+  /**
+   * Set model attribute by array elements, by same attribute/key name.
+   * @param array $attributeNames Array define pair of model attribute and array key.
+   *                    If attribute and key are same, then it may be defined as string element,
+   *                    else it should be defined as $arrayKey => $modelAttribute pair.
+   * @param string|string[] $attributeNames
+   */
+  public function setAttributeFromArray(&$attr, $attributeNames)
+  {
+      if (!is_array($attributeNames)) {
+          $attributeNames = [$attributeNames];
+      }
+      // $attributeNames' elements maybe define in two types: As an normal array element or an assoc element.
+      // Example: $attributeNames = ['modelAttribute1', 'arrayAttribute' => 'modelAttribute2']
+      // In case 1, it means $model->modelAttribute1 = $attr['modelAttribute1'];
+      // In case 2, it means $model->modelAttribute2 = $attr['arrayAttribute'];
+      foreach ($attributeNames as $key => $value) {
+          $attrKey = is_numeric($key) ? $value : $key;
+          if (isset($attr[$attrKey])) {
+              $this->$value = $attr[$attrKey];
+          }
+      }
+  }
 }

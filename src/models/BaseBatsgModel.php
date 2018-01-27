@@ -6,7 +6,6 @@ use yii\base\Model;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\helpers\ArrayHelper;
-use yii\helpers\Inflector;
 
 /**
  * Model that has field $id, $data_status, $created_at, $created_by, $update_time, $updated_by.
@@ -17,6 +16,7 @@ use yii\helpers\Inflector;
  * @property integer $created_at Created timestamp.
  * @property mixed $updated_by User id of updator.
  * @property integer $updated_at Updated timestamp.
+ * @property string $unique_id A unique string that is assigned to this record.
  *
  * @property string $createdAt Created date time.
  * @property string $updatedAt Created date time.
@@ -155,9 +155,10 @@ class BaseBatsgModel extends BaseModel
     public function beforeSave($insert)
     {
         $result = parent::beforeSave($insert);
-        if ($result && $this->isNewRecord && $this->genUuid) {
-            // Set id.
-            $this->id = $this->generateId((new \ReflectionClass($this))->getShortName() . '-');
+		// Set unique_id.
+		$uniqueIdField = 'unique_id';
+        if ($result && $this->isNewRecord && $this->hasAttribute($uniqueIdField) && !$this->$uniqueIdField) {
+            $this->$uniqueIdField = $this->generateUniqueRandomString($uniqueIdField);
         }
         return $result;
     }
@@ -193,7 +194,7 @@ class BaseBatsgModel extends BaseModel
 
     /**
      * Get list of all data of table represented by this model.
-     * 
+     *
      * @param string $valueField
      * @param string $keyField
      * @return array If $valueField is specified, mapping keyField => keyValue
@@ -203,7 +204,7 @@ class BaseBatsgModel extends BaseModel
     {
         return self::hashModels(static::findAllNotDeleted(), $keyField, $valueField);
     }
-    
+
     /**
      * Get string that represent a relational data of this record.
      * For example, for an Employee record, we want to get its Department Name.
@@ -215,11 +216,11 @@ class BaseBatsgModel extends BaseModel
      * </pre>
      * @deprecated This method is unceccessary. Below is simple enough and faster?
      *   $employee->department->id ? $employee->department->name : NULL;
-     * 
+     *
      * @param string $foreignKeyField Example: department_id
      * @param string $relationalObjectField If NULL, then it will be assumbed based on $foreignKeyField
      * @param string $valueField Name of field to get value in relational object. Example: name (of Department record).
-     * @reurn mixed $this->$relationalObjectField->$valueField 
+     * @reurn mixed $this->$relationalObjectField->$valueField
      */
 //     public function getRelationDataName($foreignKeyField, $relationalObjectField = NULL, $valueField = 'name')
 //     {
