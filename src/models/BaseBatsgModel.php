@@ -164,12 +164,28 @@ class BaseBatsgModel extends BaseModel
     }
 
     /**
+     * Create <em>data_status <> 9</em> (not deleted) conditiion for a query string.
+     *
+     * @param ActiveQuery $query
+     * @param string $tableName Specify table name (NULL for the table of this model).
+     * @return string[] condition used in where(), addOnCodition()
+     */
+    public static function conditionNotDelete($tableName = NULL)
+    {
+        if (!$tableName) {
+            $tableName = static::tableName();
+        }
+        return ['OR', "$tableName.data_status IS NULL", ['!=', "$tableName.data_status", self::DATA_STATUS_DELETE]];
+    }
+
+    /**
      * Add <em>data_status <> 9</em> (not deleted) condition to a query.
      * @param ActiveQuery $query
+     * @param string $tableName Specify table name (NULL for the table of this model).
      */
-    public static function addWhereNotDeleted(ActiveQuery $query)
+    public static function addWhereNotDeleted(ActiveQuery $query, $tableName = NULL)
     {
-        $query->andWhere(['<>', static::tableName() . '.data_status', self::DATA_STATUS_DELETE]);
+        $query->andWhere(self::conditionNotDelete($tableName));
     }
 
     /**
