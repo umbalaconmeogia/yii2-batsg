@@ -130,9 +130,9 @@ class BaseMigration extends Migration
             $tableCreated = TRUE;
 
             // Set 'id' as primary key if 'id' is not speicified in $columns.
-            if (!isset($definitions[$this->primaryKeyColumnName])) {
-                $this->addPrimaryKey(self::constraintNamePrimaryKey($table), $table, $this->primaryKeyColumnName);
-            }
+//             if (!isset($definitions[$this->primaryKeyColumnName])) {
+//                 $this->addPrimaryKey(self::constraintNamePrimaryKey($table), $table, $this->primaryKeyColumnName);
+//             }
 
             $this->addComments($table, NULL, $comments);
             $this->afterReferenceColumn();
@@ -151,7 +151,7 @@ class BaseMigration extends Migration
     protected function defaultColumns()
     {
         $columns = [
-            $this->primaryKeyColumnName => $this->string(),
+            $this->primaryKeyColumnName => $this->primaryKey(),
             'data_status' => $this->integer()->defaultValue(1),
             'created_by' => $this->integer(),
             'created_at' => $this->integer(),
