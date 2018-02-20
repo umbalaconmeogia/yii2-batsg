@@ -252,4 +252,22 @@ class BaseModel extends \yii\db\ActiveRecord
           }
       }
   }
+
+  /**
+   * Join speicifed fields' value.
+   * @param string $fields
+   * @param string $join
+   * @param boolean $ignoreEmpty If TRUE, then field's value is used if it is set.
+   * @return string
+   */
+  public function joinFieldValues($fields, $join = ' ', $ignoreEmpty = TRUE)
+  {
+      $values = [];
+      foreach ($fields as $field) {
+          if (!$ignoreEmpty || $this->$field) {
+              $values[] = $this->$field;
+          }
+      }
+      return join($join, $values);
+  }
 }
