@@ -108,9 +108,13 @@ class BaseMigration extends Migration
     {
         $tableCreated = FALSE;
         try {
+            // Merge column definition with default columns.
+            $columns = array_merge($this->defaultColumns(), $columns);
+
             // Prepare columns' definition and comment information.
             $definitions = [];
             $comments = [];
+
             foreach ($columns as $columnName => $info) {
                 if (is_array($info)) {
                     $definitions[$columnName] = $info[0];
@@ -120,13 +124,8 @@ class BaseMigration extends Migration
                 }
             }
 
-            // Merge column definition with default columns.
-            $columns = array_merge(
-                $this->defaultColumns(),
-                $definitions
-            );
             // Create table.
-            $this->createTable($table, $columns, $options);
+            $this->createTable($table, $definitions, $options);
             $tableCreated = TRUE;
 
             // Set 'id' as primary key if 'id' is not speicified in $columns.
