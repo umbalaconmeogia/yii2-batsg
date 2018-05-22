@@ -25,7 +25,9 @@ class BaseController extends Controller
         if ($trim) {
             if (is_array($value)) {
                 foreach ($value as $key => $v) {
-                    $value[$key] = trim($v);
+					if (!is_array($v)) {
+                      $value[$key] = trim($v);
+					}
                 }
             } else {
                 $value = trim($value);
@@ -33,5 +35,4 @@ class BaseController extends Controller
         }
         return $value;
     }
-
 }
