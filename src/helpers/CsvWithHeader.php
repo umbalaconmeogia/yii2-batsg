@@ -1,6 +1,21 @@
 <?php
 namespace batsg\helpers;
 
+/**
+ * Example of usage:
+ * <pre>
+ *   $constantValues = [];
+ *   CsvWithHeader::read(\Yii::$aliases('@app/config/constantValue.csv'), function($csv) {
+ *       while ($csv->loadRow() !== FALSE) {
+ *           // Get attributes as an array.
+ *           $attr = $csv->getRowAsAttributes();
+ *           // Create a model from attributes array.
+ *           $constantValues[] = new ConstantValue($attr);
+ *       }
+ *   });
+ * </pre>
+ * @author thanh
+ */
 class CsvWithHeader
 {
     private $csvFile;

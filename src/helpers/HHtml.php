@@ -11,7 +11,7 @@ class HHtml
 {
     /**
      * Display hidden fields.
-     * @param CActiveRecord $model
+     * @param ActiveRecord $model
      * @param mixed $fields NULL, or string (fields name), or array of fieldNames.
      * @param string $index If specified, then field name will be set as modelName[index][fieldName]
      * @param array $htmlOptions
@@ -45,6 +45,22 @@ class HHtml
 	public static function datetimeLocalValue($dateTime)
     {
         return date('Y-m-d\TH:i:s', strtotime($dateTime));
+	}
+	
+	/**
+	 * 
+	 * @param array|string $src the image URL. This parameter will be processed by [[Url::to()]].
+	 * @param integer $width the width of the thumbnail.
+	 * $param array $options the tag options in terms of name-value pairs. 
+	 * @return string the generated image tag. 
+	 */
+	public static function imgThumbnail($src, $width = 100, $options = []) {
+	    // Set width attribute of the image.
+	    if ($width && !isset($options['width'])) {
+	        $options['width'] = $width;
+	    }
+	    
+	    return Html::img($src, $options);
 	}
 
 }
