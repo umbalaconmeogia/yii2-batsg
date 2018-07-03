@@ -156,11 +156,35 @@ class BaseBatsgModel extends BaseModel
     {
         $result = parent::beforeSave($insert);
 		// Set unique_id.
-		$uniqueIdField = 'unique_id';
-        if ($result && $this->isNewRecord && $this->hasAttribute($uniqueIdField) && !$this->$uniqueIdField) {
-            $this->$uniqueIdField = $this->generateUniqueRandomString($uniqueIdField);
+        if ($result) {
+            $this->generateUniqueIdAttribute();
         }
         return $result;
+    }
+    
+    /**
+     * Attribute name of the unique Id attribute.
+     * If specified, then this attribute will be generated beforeSave();
+     * Sub class should overwrite this method if use unique Id attribute.
+     * @return string
+     */
+    protected function uniqueIdAttributeName()
+    {
+        return NULL;
+    }
+    
+    /**
+     * Generate unique id.
+     * @param string $attributeName The name of the attribute. If NULL, then uniqueIdAttributeName() will be called to get the attribute name.
+     */
+    protected function generateUniqueIdAttribute($attributeName = NULL)
+    {
+        if (!$attributeName) {
+            $attributeName = $this->uniqueIdAttributeName();
+        }
+        if ($attributeName && $this->hasAttribute($attributeName) && !$this->$attributeName) {
+            $this->$attributeName = $this->generateUniqueRandomString($attributeName);
+        }
     }
 
     /**
