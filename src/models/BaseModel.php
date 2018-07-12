@@ -77,7 +77,7 @@ class BaseModel extends \yii\db\ActiveRecord
 
     /**
      * Create a hash of model list by a field value.
-     * @param CActiveRecord $models
+     * @param ActiveRecord $models
      * @param string $keyField Default by id.
      * @param string $valueField If specified, then this field's value is used as array's value.
      *                           Else set the model instance as value.
@@ -93,7 +93,7 @@ class BaseModel extends \yii\db\ActiveRecord
 
     /**
      * Create an array of model's field value.
-     * @param CActiveRecord $models
+     * @param ActiveRecord $models
      * @param string $keyField
      * @return array
      */

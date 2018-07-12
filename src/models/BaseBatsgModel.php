@@ -115,7 +115,7 @@ class BaseBatsgModel extends BaseModel
         $this->data_status = self::DATA_STATUS_DELETE;
         if (!$this->save()) {
             $this->logError();
-            throw new Exception("Error while deleting " . $this);
+            throw new \Exception("Error while deleting " . $this);
         }
     }
 
