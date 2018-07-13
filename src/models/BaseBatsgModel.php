@@ -6,6 +6,7 @@ use yii\base\Model;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\helpers\ArrayHelper;
+use batsg\Y;
 
 /**
  * Model that has field $id, $data_status, $created_at, $created_by, $update_time, $updated_by.
@@ -24,8 +25,7 @@ use yii\helpers\ArrayHelper;
  */
 class BaseBatsgModel extends BaseModel
 {
-    const DATA_STATUS_NEW = 1;
-    const DATA_STATUS_UPDATE = 2;
+    const DATA_STATUS_ACTIVE = 1;
     const DATA_STATUS_DELETE = 9;
 
     /**
@@ -161,7 +161,7 @@ class BaseBatsgModel extends BaseModel
         }
         return $result;
     }
-    
+
     /**
      * Attribute name of the unique Id attribute.
      * If specified, then this attribute will be generated beforeSave();
@@ -172,7 +172,7 @@ class BaseBatsgModel extends BaseModel
     {
         return NULL;
     }
-    
+
     /**
      * Generate unique id.
      * @param string $attributeName The name of the attribute. If NULL, then uniqueIdAttributeName() will be called to get the attribute name.
@@ -226,9 +226,8 @@ class BaseBatsgModel extends BaseModel
     public static function dataStatusOptionArr()
     {
         return [
-            self::DATA_STATUS_NEW => '新規',
-            self::DATA_STATUS_UPDATE => '変更',
-            self::DATA_STATUS_DELETE => '削除',
+            self::DATA_STATUS_ACTIVE => Y::t('active'),
+            self::DATA_STATUS_DELETE => Y::t('deleted'),
         ];
     }
 
