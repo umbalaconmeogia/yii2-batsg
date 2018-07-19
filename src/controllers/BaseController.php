@@ -9,7 +9,6 @@ use yii\db\ActiveRecord;
 
 class BaseController extends Controller
 {
-
     /**
      * Get the specified URL parameter.
      * <p>
@@ -41,25 +40,48 @@ class BaseController extends Controller
     }
 
     /**
+     * Default action to list all Project models.
+     *
+     * This may be used to create actionIndex() as below:
+     * <pre>
+     * public function actionIndex()
+     * {
+     *     return $this->defaultActionIndex(UserSearch::class);
+     * }
+     *
+     * @return mixed
+     */
+    protected function defaultActionIndex($searchModelClass)
+    {
+        $searchModel = new $searchModelClass;
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+        return $this->render('index', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+
+    /**
      * Default action to display a single model.
      *
      * This may be used to create actionView($id) as below:
      * <pre>
      * public function actionView($id)
      * {
-     *     return $this->defaultActionView(User::class, $id);
+     *     return $this->defaultActionView($id, User::class);
      * }
      * </pre>
      *
-     * @param string $modelClass The fully qualified class name.
      * @param integer $id
+     * @param string $modelClass The fully qualified class name.
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function defaultActionView($modelClass, $id)
+    protected function defaultActionView($id, $modelClass)
     {
         return $this->render('view', [
-            'model' => $this->findModelById($modelClass, $id),
+            'model' => $this->findModelById($id, $modelClass),
         ]);
     }
 
@@ -67,7 +89,7 @@ class BaseController extends Controller
      * Default action to create a new model.
      * If creation is successful, the browser will be redirected to the $redirect page.
      *
-     * This may be used to create actionView($id) as below:
+     * This may be used to create actionCreate($id) as below:
      * <pre>
      * public function actionCreate()
      * {
@@ -101,23 +123,23 @@ class BaseController extends Controller
      * Default action to update an existing model.
      * If update is successful, the browser will be redirected to the 'view' page.
      *
-     * This may be used to create actionView($id) as below:
+     * This may be used to create actionUpdate($id) as below:
      * <pre>
      * public function actionUpdate($id)
      * {
-     *     return $this->defaultActionUpdate(User::class, $id, 'index');
+     *     return $this->defaultActionUpdate($id, User::class, 'index');
      * }
      * </pre>
      *
-     * @param string $modelClass The fully qualified class name.
      * @param integer $id
+     * @param string $modelClass The fully qualified class name.
      * @param string $redirect Page to redirect if creation is successfull, may be 'view' or 'index'.
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function defaultActionUpdate($modelClass, $id, $redirect = 'view')
+    protected function defaultActionUpdate($id, $modelClass, $redirect = 'view')
     {
-        $model = $this->findModelById($modelClass, $id);
+        $model = $this->findModelById($id, $modelClass);
 
         if ($model->load(Yii::$app->request->post())) {
             if ($model->save()) {
@@ -134,27 +156,32 @@ class BaseController extends Controller
     }
 
     /**
-     * Default action to delete an existing model.
+     * Default action to delete logically an existing model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      *
-     * This may be used to create actionView($id) as below:
+     * This may be used to create actionDelete($id) as below:
      * <pre>
      * public function actionDelete($id)
      * {
-     *     return $this->defaultActionDelete(User::class, $id);
+     *     return $this->defaultActionDelete($id, User::class);
      * }
      * </pre>
      *
      * @param string $modelClass The fully qualified class name.
      * @param integer $id
      * @param string $redirect Page to redirect if creation is successfull, may be 'view' or 'index'.
+     * @param boolean $logicalDelete Delete logically if TRUE or physically if FALSE.
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function defaultActionDelete($modelClass, $id)
+    protected function defaultActionDelete($id, $modelClass, $logicalDelete = TRUE)
     {
-        $model = $this->findModelById($modelClass, $id);
-        $model->deleteLogically();
+        $model = $this->findModelById($id, $modelClass);
+        if ($logicalDelete) {
+           $model->deleteLogically();
+        } else {
+            $model->delete();
+        }
         Y::setFlashWarning((new \ReflectionClass($model))->getShortName() . ' is deleted.');
 
         return $this->redirect(['index']);
@@ -163,12 +190,12 @@ class BaseController extends Controller
     /**
      * Finds the model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param string $modelClass The fully qualified class name.
      * @param integer $id
+     * @param string $modelClass The fully qualified class name.
      * @return ActiveRecord the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModelById($modelClass, $id)
+    protected function findModelById($id, $modelClass)
     {
         if (($model = $modelClass::findOne($id)) !== null) {
             return $model;
