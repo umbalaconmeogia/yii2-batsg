@@ -72,7 +72,7 @@ class HDateTime
     // Get the approciate timestamp.
     $timestamp = strtotime($dateTime);
     // Get the HDateTime instance.
-    return new HDateTime($timestamp);
+    return new static($timestamp);
   }
 
   /**
@@ -91,7 +91,7 @@ class HDateTime
     // Convert to timestamp.
     $timestamp = mktime($hour, $minute, $second, $month, $day, $year);
     // Set from timestamp to date time elements.
-    return new HDateTime($timestamp);
+    return new static($timestamp);
   }
 
   /**
@@ -102,7 +102,7 @@ class HDateTime
    */
   public static function createFromTimestamp($timestamp)
   {
-    return new HDateTime($timestamp);
+    return new static($timestamp);
   }
 
   /**
@@ -111,7 +111,7 @@ class HDateTime
    */
   public static function now()
   {
-    return new HDateTime(time());
+    return new static(time());
   }
 
   /**
@@ -333,7 +333,7 @@ class HDateTime
     if ($modify) {
       $hDateTime = $this->resetByTimestamp($timestamp);
     } else {
-      $hDateTime = new HDateTime($timestamp);
+      $hDateTime = new static($timestamp);
     }
     return $hDateTime;
   }
