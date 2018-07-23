@@ -40,7 +40,7 @@ class BaseController extends Controller
     }
 
     /**
-     * Default action to list all Project models.
+     * Default action to list all models.
      *
      * This may be used to create actionIndex() as below:
      * <pre>
@@ -99,17 +99,25 @@ class BaseController extends Controller
      *
      * @param string $modelClass The fully qualified class name.
      * @param string $redirect Page to redirect if creation is successfull, may be 'view' or 'index'.
+     * @param callable $beforeSaveCallback Callback function with $model as parameter.
      * @return mixed
      */
-    protected function defaultActionCreate($modelClass, $redirect = 'view')
+    protected function defaultActionCreate($modelClass, $redirect = 'view', $beforeSaveCallback = NULL)
     {
         $model = new $modelClass;
 
         if ($model->load(Yii::$app->request->post())) {
-            if ($model->save()) {
+            if ($beforeSaveCallback) {
+                call_user_func($beforeSaveCallback, $model);
+            }
+            $transaction = \Yii::$app->db->beginTransaction();
+            try {
+                $model->saveThrowError();
+                $transaction->commit();
                 Y::setFlashSuccess((new \ReflectionClass($model))->getShortName() . ' is created successfully.');
-                return $this->redirect([$redirect, 'id' => $model->id]);
-            } else {
+                $this->redirect([$redirect, 'id' => $model->id]);
+            } catch (\Exception $e) {
+                $transaction->rollBack();
                 Y::setFlashError((new \ReflectionClass($model))->getShortName() . ' creation is fail.');
             }
         }
@@ -142,10 +150,14 @@ class BaseController extends Controller
         $model = $this->findModelById($id, $modelClass);
 
         if ($model->load(Yii::$app->request->post())) {
-            if ($model->save()) {
+            $transaction = \Yii::$app->db->beginTransaction();
+            try {
+                $model->saveThrowError();
+                $transaction->commit();
                 Y::setFlashSuccess((new \ReflectionClass($model))->getShortName() . ' is updated successfully.');
-                return $this->redirect([$redirect, 'id' => $model->id]);
-            } else {
+                $this->redirect([$redirect, 'id' => $model->id]);
+            } catch (\Exception $e) {
+                $transaction->rollBack();
                 Y::setFlashError((new \ReflectionClass($model))->getShortName() . ' updating is fail.');
             }
         }
