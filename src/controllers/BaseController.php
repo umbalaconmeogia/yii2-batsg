@@ -1,11 +1,11 @@
 <?php
 namespace batsg\controllers;
 
-use yii\web\Controller;
-use Yii;
 use batsg\Y;
-use yii\web\NotFoundHttpException;
+use Yii;
 use yii\db\ActiveRecord;
+use yii\web\Controller;
+use yii\web\NotFoundHttpException;
 
 class BaseController extends Controller
 {
@@ -105,21 +105,22 @@ class BaseController extends Controller
      */
     protected function defaultActionCreate($modelClass, $redirect = 'view', $beforeSaveCallback = NULL)
     {
+        /** @var BaseBatsgModel $model */
         $model = new $modelClass;
 
         if ($model->load(Yii::$app->request->post())) {
             if ($beforeSaveCallback) {
                 call_user_func($beforeSaveCallback, $model);
             }
-            $transaction = \Yii::$app->db->beginTransaction();
+            $transaction = Yii::$app->db->beginTransaction();
             try {
                 $model->saveThrowError();
                 $transaction->commit();
-                Y::setFlashSuccess((new \ReflectionClass($model))->getShortName() . ' is created successfully.');
-                $this->redirect([$redirect, 'id' => $model->id]);
+                $this->flashUpdateSuccess($model, TRUE);
+                return $this->redirect([$redirect, 'id' => $model->id]);
             } catch (\Exception $e) {
                 $transaction->rollBack();
-                Y::setFlashError((new \ReflectionClass($model))->getShortName() . ' creation is fail.');
+                $this->flashUpdateFail($model, TRUE);
             }
         }
 
@@ -151,15 +152,15 @@ class BaseController extends Controller
         $model = $this->findModelById($id, $modelClass);
 
         if ($model->load(Yii::$app->request->post())) {
-            $transaction = \Yii::$app->db->beginTransaction();
+            $transaction = Yii::$app->db->beginTransaction();
             try {
                 $model->saveThrowError();
                 $transaction->commit();
-                Y::setFlashSuccess((new \ReflectionClass($model))->getShortName() . ' is updated successfully.');
-                $this->redirect([$redirect, 'id' => $model->id]);
+                $this->flashUpdateSuccess($model, FALSE);
+                return $this->redirect([$redirect, 'id' => $model->id]);
             } catch (\Exception $e) {
                 $transaction->rollBack();
-                Y::setFlashError((new \ReflectionClass($model))->getShortName() . ' updating is fail.');
+                $this->flashUpdateFail($model, FALSE);
             }
         }
 
@@ -167,6 +168,7 @@ class BaseController extends Controller
             'model' => $model,
         ]);
     }
+
 
     /**
      * Default action to delete logically an existing model.
@@ -215,5 +217,27 @@ class BaseController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    /**
+     * Set flash when create/update model successfully.
+     * @param ActiveRecord $model
+     * @param boolean $isNewRecord
+     */
+    protected function flashUpdateSuccess($model, $isNewRecord)
+    {
+        $message = $isNewRecord ? ' is created successfully.' : ' is updated successfully.';
+        Y::setFlashSuccess((new \ReflectionClass($model))->getShortName() . $message);
+    }
+
+    /**
+     * Set flash when create/update model failure.
+     * @param ActiveRecord $model
+     * @param boolean $isNewRecord
+     */
+    protected function flashUpdateFail($model, $isNewRecord)
+    {
+        $message = $isNewRecord ? ' creation is fail.' : ' updating is fail.';
+        Y::setFlashError((new \ReflectionClass($model))->getShortName() . $message);
     }
 }
