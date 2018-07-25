@@ -61,7 +61,7 @@ class HTime
       $this->_second = $seconds % 60;
       $minutes = $seconds / 60;
       $this->_minute = $minutes % 60;
-      $this->_hour = $minutes / 60;
+      $this->_hour = ($minutes - $this->_minute) / 60;
 
       return $this;
   }

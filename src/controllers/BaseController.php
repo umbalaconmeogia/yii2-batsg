@@ -75,12 +75,13 @@ class BaseController extends Controller
      *
      * @param integer $id
      * @param string $modelClass The fully qualified class name.
+     * @param string $view View name
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function defaultActionView($id, $modelClass)
+    protected function defaultActionView($id, $modelClass, $view = 'view')
     {
-        return $this->render('view', [
+        return $this->render($view, [
             'model' => $this->findModelById($id, $modelClass),
         ]);
     }
