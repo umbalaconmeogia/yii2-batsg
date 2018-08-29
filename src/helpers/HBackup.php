@@ -102,7 +102,7 @@ class HBackup {
       if (is_subclass_of($className, 'yii\db\ActiveRecord') && method_exists($className, 'tableName')) {
         try {
           $tableName = $className::tableName();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
           $tableName = NULL;
         }
         if (in_array($tableName, $tableNames)) {
@@ -184,7 +184,7 @@ class HBackup {
 
   /**
    * Truncate a table.
-   * @param unknown $tableName
+   * @param string $tableName
    * @param string $setForeignKeyCheck
    */
   public static function truncate($tableName, $setForeignKeyCheck = FALSE)
@@ -212,6 +212,10 @@ class HBackup {
    */
   public static function importDbFromCsv($inputFileName)
   {
+    if(0 === strpos(PHP_OS, 'WIN')) {
+        $lcType = setlocale(LC_CTYPE, 0);
+        setlocale(LC_CTYPE, 'C');
+    }
     self::setForeignKeyCheck(0);
     $truncate = TRUE;
     $updateKey = NULL;
@@ -246,14 +250,14 @@ class HBackup {
           }
           $model = $model ? $model : new $modelClassName;
           foreach ($attributes as $index => $attribute) {
-            if ($attribute) {
+            if ($attribute && isset($data[$index])) {
               $model->$attribute = $data[$index] === 'NULL' || $data[$index] === '' ? NULL : $data[$index];
             }
           }
           // Save record.
           if (!$model->save()) {
             $model->logError();
-            throw new Exception("Error saving $modelClassName");
+            throw new \Exception("Error saving $modelClassName");
           }
         }
       }
@@ -262,12 +266,15 @@ class HBackup {
       fclose($handle);
 
       $transaction->commit(); // Commit transaction.
-    } catch (Exception $e) {
+    } catch (\Exception $e) {
       $transaction->rollback(); // Rolback transaction.
       throw $e;
     }
 
     self::setForeignKeyCheck(1);
+    if(0 === strpos(PHP_OS, 'WIN')) {
+        setlocale(LC_CTYPE, $lcType);
+    }
   }
 
   /**
