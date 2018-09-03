@@ -141,7 +141,8 @@ class HBackup {
     $attributes = $model->attributes();
 
     // Write table name.
-    fputcsv($handle, [self::TABLE_MARKER, $modelClassName]);
+    // TODO: Change 'id' by primary keys.
+    fputcsv($handle, [self::TABLE_MARKER, $modelClassName, 'update', 'id']);
     // Write column name.
     fputcsv($handle, $attributes);
 
@@ -177,8 +178,15 @@ class HBackup {
 
   public static function setForeignKeyCheck($value)
   {
-    if (!self::isSqlite()) {
-      Yii::$app->db->createCommand("SET FOREIGN_KEY_CHECKS={$value};")->execute();
+    $command = NULL;
+    if (\Yii::$app->db->driverName === 'mysql') {
+        $command = "SET FOREIGN_KEY_CHECKS={$value};";
+    } else if (\Yii::$app->db->driverName === 'pgsql') {
+        $command = $value ? 'SET CONSTRAINTS ALL IMMEDIATE;' : 'SET CONSTRAINTS ALL DEFERRED;';
+    }
+    
+    if ($command) {
+      Yii::$app->db->createCommand($command)->execute();
     }
   }
 
@@ -227,7 +235,7 @@ class HBackup {
       // Read each line of csv.
       $attributes = NULL;
       while (($data = fgetcsv($handle)) !== FALSE) {
-        if ($data[0] === self::TABLE_MARKER) {
+          if ($data[0] === self::TABLE_MARKER) {
           // Process model class name line.
           $modelClassName = self::fullQualifiedModelClassName($data[1]);
           if (isset($data[2]) && $data[2] == 'update') {
