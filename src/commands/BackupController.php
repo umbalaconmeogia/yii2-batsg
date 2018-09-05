@@ -63,5 +63,15 @@ class BackupController extends Controller
     {
         HBackup::importDbFromCsv($this->csvFile);
     }
+    
+    /**
+     * Update tables' id sequence of PostgreSQL.
+     * Syntax:
+     * ./yii backup/update-postgres-id-seq
+     */
+    public function actionUpdatePostgresIdSeq()
+    {
+        HBackup::updatePostgresIdSeq();
+    }
 }
 ?>

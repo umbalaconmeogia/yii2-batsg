@@ -141,8 +141,7 @@ class HBackup {
     $attributes = $model->attributes();
 
     // Write table name.
-    // TODO: Change 'id' by primary keys.
-    fputcsv($handle, [self::TABLE_MARKER, $modelClassName, 'update', 'id']);
+    fputcsv($handle, [self::TABLE_MARKER, $modelClassName]);
     // Write column name.
     fputcsv($handle, $attributes);
 
@@ -178,15 +177,8 @@ class HBackup {
 
   public static function setForeignKeyCheck($value)
   {
-    $command = NULL;
-    if (\Yii::$app->db->driverName === 'mysql') {
-        $command = "SET FOREIGN_KEY_CHECKS={$value};";
-    } else if (\Yii::$app->db->driverName === 'pgsql') {
-        $command = $value ? 'SET CONSTRAINTS ALL IMMEDIATE;' : 'SET CONSTRAINTS ALL DEFERRED;';
-    }
-    
-    if ($command) {
-      Yii::$app->db->createCommand($command)->execute();
+    if (!self::isSqlite()) {
+      Yii::$app->db->createCommand("SET FOREIGN_KEY_CHECKS={$value};")->execute();
     }
   }
 
@@ -235,7 +227,7 @@ class HBackup {
       // Read each line of csv.
       $attributes = NULL;
       while (($data = fgetcsv($handle)) !== FALSE) {
-          if ($data[0] === self::TABLE_MARKER) {
+        if ($data[0] === self::TABLE_MARKER) {
           // Process model class name line.
           $modelClassName = self::fullQualifiedModelClassName($data[1]);
           if (isset($data[2]) && $data[2] == 'update') {
@@ -345,6 +337,27 @@ class HBackup {
       $columns[$columnName] = $index;
     }
     return $columns;
+  }
+  
+  /**
+   * Update the sequence of table primary key (id).
+   */
+  public static function updatePostgresIdSeq()
+  {
+      $tableNames = Yii::$app->db->schema->tableNames;
+      $errors = [];
+      foreach ($tableNames as $tableName) {
+          try {
+              $command = "SELECT setval('{$tableName}_id_seq', (SELECT MAX(id) FROM {$tableName}))";
+              Yii::$app->db->createCommand($command)->execute();
+          } catch (\Exception $e) {
+              Yii::error($e);
+              $errors[] = $e->getMessage();
+          }
+      }
+      if ($errors) {
+          print_r($errors);
+      }
   }
 }
 ?>
