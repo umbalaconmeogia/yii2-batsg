@@ -368,9 +368,7 @@ class BaseMigration extends Migration
         }
 
         // Add comments.
-        foreach ($comments as $column => $comment) {
-            $this->addCommentOnColumn($table, $column, $comment);
-        }
+        $this->addComments($table, NULL, $comments);
     }
 
     /**
