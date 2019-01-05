@@ -7,6 +7,38 @@ use yii\db\ActiveRecord;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 
+/**
+ * A controller that inherit from BaseController looks as following
+ * <pre>
+ * class NewController extends BaseController
+ * {
+ *     public function actionIndex()
+ *     {
+ *         return $this->defaultActionIndex(UserSearch::class);
+ *     }
+ *     
+ *     public function actionView($id)
+ *     {
+ *         return $this->defaultActionView($id, User::class);
+ *     }
+ *
+ *     public function actionCreate()
+ *     {
+ *         return $this->defaultActionCreate(User::class, 'index');
+ *     }
+ *
+ *     public function actionUpdate($id)
+ *     {
+ *         return $this->defaultActionUpdate($id, User::class, 'index');
+ *     }
+ *
+ *     public function actionDelete($id)
+ *     {
+ *         return $this->defaultActionDelete($id, User::class);
+ *     }
+ * }
+ * </pre>
+ */
 class BaseController extends Controller
 {
     /**
