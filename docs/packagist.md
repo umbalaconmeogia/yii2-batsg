@@ -1,4 +1,4 @@
-# Tag and upload to packagist
+ Tag and upload to packagist
 
 ## Check current tag
 ```shell
@@ -12,3 +12,7 @@ git tag v0.3.2
 # Push to remote server
 git push origin v0.3.2
 ```
+
+## Packagist URL
+
+https://packagist.org/packages/umbalaconmeogia/yii2-batsg
