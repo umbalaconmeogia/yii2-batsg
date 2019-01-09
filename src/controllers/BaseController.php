@@ -16,7 +16,7 @@ use yii\web\NotFoundHttpException;
  *     {
  *         return $this->defaultActionIndex(UserSearch::class);
  *     }
- *     
+ *
  *     public function actionView($id)
  *     {
  *         return $this->defaultActionView($id, User::class);
@@ -133,20 +133,27 @@ class BaseController extends Controller
      * @param string $modelClass The fully qualified class name.
      * @param string $redirect Page to redirect if creation is successfull, may be 'view' or 'index'.
      * @param callable $beforeSaveCallback Callback function with $model as parameter.
+     * @param callable $afterSaveCallback Callback function with $model as parameter.
      * @return mixed
      */
-    protected function defaultActionCreate($modelClass, $redirect = 'view', $beforeSaveCallback = NULL)
+    protected function defaultActionCreate($modelClass, $redirect = 'view', $beforeSaveCallback = NULL, $afterSaveCallback = NULL)
     {
         /** @var BaseBatsgModel $model */
         $model = new $modelClass;
 
         if ($model->load(Yii::$app->request->post())) {
-            if ($beforeSaveCallback) {
-                call_user_func($beforeSaveCallback, $model);
-            }
             $transaction = Yii::$app->db->beginTransaction();
             try {
+                if ($beforeSaveCallback) {
+                    call_user_func($beforeSaveCallback, $model);
+                }
+
                 $model->saveThrowError();
+
+                if ($afterSaveCallback) {
+                    call_user_func($afterSaveCallback, $model);
+                }
+
                 $transaction->commit();
                 $this->flashUpdateSuccess($model, TRUE);
                 return $this->redirect([$redirect, 'id' => $model->id]);
@@ -176,17 +183,28 @@ class BaseController extends Controller
      * @param integer $id
      * @param string $modelClass The fully qualified class name.
      * @param string $redirect Page to redirect if creation is successfull, may be 'view' or 'index'.
+     * @param callable $beforeSaveCallback Callback function with $model as parameter.
+     * @param callable $afterSaveCallback Callback function with $model as parameter.
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function defaultActionUpdate($id, $modelClass, $redirect = 'view')
+    protected function defaultActionUpdate($id, $modelClass, $redirect = 'view', $beforeSaveCallback = NULL, $afterSaveCallback = NULL)
     {
         $model = $this->findModelById($id, $modelClass);
 
         if ($model->load(Yii::$app->request->post())) {
             $transaction = Yii::$app->db->beginTransaction();
             try {
+                if ($beforeSaveCallback) {
+                    call_user_func($beforeSaveCallback, $model);
+                }
+
                 $model->saveThrowError();
+
+                if ($afterSaveCallback) {
+                    call_user_func($afterSaveCallback, $model);
+                }
+
                 $transaction->commit();
                 $this->flashUpdateSuccess($model, FALSE);
                 return $this->redirect([$redirect, 'id' => $model->id]);
