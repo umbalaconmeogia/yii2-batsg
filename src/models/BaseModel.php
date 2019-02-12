@@ -4,6 +4,8 @@ namespace batsg\models;
 
 use batsg\helpers\HRandom;
 use Yii;
+use yii\base\Model;
+use yii\db\ActiveRecord;
 
 class BaseModel extends \yii\db\ActiveRecord
 {
@@ -124,6 +126,7 @@ class BaseModel extends \yii\db\ActiveRecord
         if (!is_array($fields)) {
             $fields = array($fields);
         }
+        $info = [];
         foreach ($fields as $field) {
             $info[] = "$field: {$this->$field}";
         }
@@ -146,10 +149,60 @@ class BaseModel extends \yii\db\ActiveRecord
     {
         return $this->tableSchema->primaryKey;
     }
+    
+    /**
+     * Generate a random and unique value for an attribute.
+     * Developer may overwrite the generateUniqueRandomAttribute() function, to decide to generate an integer value (by calling generateUniqueRandomInteger) or a string (by calling generateUniqueRandomString()).
+     * @param string $attribute The attribute to be checked.
+     * @param string $prefix The prefix of the generated string.
+     * @param number $length The length of the string.
+     * @param string $characterSet
+     *            If specified, then only character in this string is used.
+     * @param integer $characterCase
+     *            If 0, character is case sensitive. If -1, all characters are converted to lower case. If 1, all characters are converted to upper case.
+     */
+    public function generateUniqueRandomAttribute($attribute, $prefix = NULL, $length = 12, $characterSet = NULL, $characterCase = 0)
+    {
+        // Loop until find unique value.
+        do {
+            $randomValue = $this->generateUniqueRandomValue($prefix, $length, $characterSet, $characterCase);
+            if ($this->findOne([$attribute => $randomValue])) {
+                $randomValue = null;
+            }
+        } while ($randomValue == null);
+        
+        return $randomValue;
+    }
+    
+    /**
+     * Generate a random and unique value.
+     * Overwrite this function to decide to generate an integer value (by calling generateUniqueRandomBigInteger())
+     * or a string (by calling generateUniqueRandomString()).
+     * @param string $prefix The prefix of the generated string.
+     * @param number $length The length of the string.
+     * @param string $characterSet
+     *            If specified, then only character in this string is used.
+     * @param integer $characterCase
+     *            If 0, character is case sensitive. If -1, all characters are converted to lower case. If 1, all characters are converted to upper case.
+     */
+    protected function generateUniqueRandomValue($prefix = NULL, $length = 12, $characterSet = NULL, $characterCase = 0)
+    {
+        return $this->generateUniqueRandomBigInteger($prefix);
+        //return $this->generateUniqueRandomString($prefix, $length, $characterSet, $characterCase);
+    }
+    
+    /**
+     * Generate a random bigint value.
+     * @param string $prefix The prefix of the generated string.
+     * @return number
+     */
+    protected function generateUniqueRandomBigInteger($prefix = NULL)
+    {
+        return $prefix . random_int(1, PHP_INT_MAX);
+    }
 
     /**
      * Generate a random string that is unique when put on an attribute of a DB table.
-     * @param string $attribute The attribute to be checked.
      * @param string $prefix The prefix of the generated string.
      * @param number $length The length of the string.
      * @param string $characterSet
@@ -158,16 +211,10 @@ class BaseModel extends \yii\db\ActiveRecord
      *            If 0, character is case sensitive. If -1, all characters are converted to lower case. If 1, all characters are converted to upper case.
      * @return string
      */
-    public function generateUniqueRandomString($attribute, $prefix = NULL, $length = 32, $characterSet = NULL, $characterCase = 0)
+    protected function generateUniqueRandomString($prefix = NULL, $length = 12, $characterSet = NULL, $characterCase = 0)
     {
         $randomString = HRandom::generateRandomString($length, $characterSet, $characterCase);
         $randomString = $prefix . $randomString;
-
-        // Loop until find unique string.
-        if ($this->findOne([$attribute => $randomString])) {
-            $randomString = $this->generateUniqueRandomString($attribute, $prefix, $length, $characterSet, $characterCase);
-        }
-
         return $randomString;
     }
 

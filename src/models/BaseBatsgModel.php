@@ -123,10 +123,11 @@ class BaseBatsgModel extends BaseModel
      * Generate unique string to be used as primary key.
      * @param string $prefix
      * @return string
+     * @deprecated Not used.
      */
     public function generateId($prefix = NULL)
     {
-        return $this->generateUniqueRandomString('id', $prefix);
+        return $this->generateUniqueRandomAttribute('id', $prefix);
     }
 
     /**
@@ -183,7 +184,7 @@ class BaseBatsgModel extends BaseModel
             $attributeName = $this->uniqueIdAttributeName();
         }
         if ($attributeName && $this->hasAttribute($attributeName) && !$this->$attributeName) {
-            $this->$attributeName = $this->generateUniqueRandomString($attributeName);
+            $this->$attributeName = $this->generateUniqueRandomAttribute($attributeName);
         }
     }
 
