@@ -226,6 +226,7 @@ class BaseMigration extends Migration
         if ($refTable != NULL) {
             $columns = [[$columns, $refTable, $refColumn]];
         }
+
         foreach ($columns as $columnReference) {
             $column = $columnReference[0];
             $refTable = $columnReference[1];

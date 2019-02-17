@@ -130,16 +130,18 @@ class BaseController extends Controller
      * }
      * </pre>
      *
-     * @param string $modelClass The fully qualified class name.
+     * @param \Codeception\Lib\Interfaces\ActiveRecord|string $model A model object or fully qualified class name of model.
      * @param string $redirect Page to redirect if creation is successfull, may be 'view' or 'index'.
      * @param callable $beforeSaveCallback Callback function with $model as parameter.
      * @param callable $afterSaveCallback Callback function with $model as parameter.
      * @return mixed
      */
-    protected function defaultActionCreate($modelClass, $redirect = 'view', $beforeSaveCallback = NULL, $afterSaveCallback = NULL)
+    protected function defaultActionCreate($model, $redirect = 'view', $beforeSaveCallback = NULL, $afterSaveCallback = NULL)
     {
         /** @var BaseBatsgModel $model */
-        $model = new $modelClass;
+        if (is_string($model)) {
+            $model = new $model;
+        }
 
         if ($model->load(Yii::$app->request->post())) {
             $transaction = Yii::$app->db->beginTransaction();
