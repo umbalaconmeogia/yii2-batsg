@@ -80,9 +80,10 @@ class BaseBatsgModel extends BaseModel
      * @return ActiveQuery
      */
     public static function findNotDeleted($condition = NULL, $params = []) {
+        /* @var $result ActiveQuery */
         $result = static::find()->where(['OR', 'data_status IS NULL', ['!=', 'data_status', self::DATA_STATUS_DELETE]]);
         if ($condition) {
-            $result = $result->where($condition, $params);
+            $result = $result->andWhere($condition, $params);
         }
         return $result;
     }
