@@ -4,75 +4,78 @@ namespace batsg\models;
 
 use batsg\helpers\HRandom;
 use Yii;
-use yii\base\Model;
 use yii\db\ActiveRecord;
 
 class BaseModel extends \yii\db\ActiveRecord
 {
     /**
-     * Get all errors on this model.
+     * Get all errors on a model.
+     * @param ActiveRecord $model
      * @param string $attribute attribute name. Use null to retrieve errors for all attributes.
      * @return array errors for all attributes or the specified attribute. Empty array is returned if no error.
      */
-    public function getErrorMessages($attribute = NULL)
+    public static function getErrorMessagesModel($model, $attribute = NULL)
     {
         if ($attribute === NULL) {
-            $attribute = $this->attributes();
+            $attribute = $model->attributes();
         }
         if (!is_array($attribute)) {
             $attribute = array($attribute);
         }
         $errors = array();
         foreach ($attribute as $attr) {
-            if ($this->hasErrors($attr)) {
-                $errors = array_merge($errors, array_values($this->getErrors($attr)));
+            if ($model->hasErrors($attr)) {
+                $errors = array_merge($errors, array_values($model->getErrors($attr)));
             }
         }
         return $errors;
     }
 
     /**
-     * Log error of this model.
+     * Log error of a model.
+     * @param ActiveRecord $model
      * @param string $message The message to be exported first.
      * @param string $category
      */
-    public function logError($message = NULL, $category = 'application')
+    public static function logErrorModel($model, $message = NULL, $category = 'application')
     {
         if ($message) {
             Yii::error($message, $category);
         }
-        Yii::error($this->tableName() . " " . print_r($this->attributes, TRUE), $category);
-        Yii::error(print_r($this->getErrorMessages(), TRUE), $category);
+        Yii::error($model->tableName() . " " . print_r($model->attributes, TRUE), $category);
+        Yii::error(print_r(self::getErrorMessagesModel($model), TRUE), $category);
     }
 
     /**
-     * Save this model, write error to log if error occurs.
+     * Save a model, write error to log if error occurs.
+     * @param ActiveRecord $model
      * @param string $errorMessage
      * @return boolean
      */
-    public function saveLogError($errorMessage = NULL)
+    public static function saveLogErrorModel($model, $errorMessage = NULL)
     {
         if ($errorMessage === NULL) {
-            $errorMessage = "Error while saving " . $this->toString();
+            $errorMessage = "Error while saving " . self::toStringModel($model);
         }
-        $result = $this->save();
+        $result = $model->save();
         if (!$result) {
-            $this->logError($errorMessage);
+            self::logErrorModel($model, $errorMessage);
         }
         return $result;
     }
 
     /**
-     * Save this model, write error to log and throw exception if error occurs.
+     * Save a model, write error to log and throw exception if error occurs.
+     * @param ActiveRecord $model
      * @param string $errorMessage
      * @throws \Exception
      */
-    public function saveThrowError($errorMessage = NULL)
+    public static function saveThrowErrorModel($model, $errorMessage = NULL)
     {
         if ($errorMessage === NULL) {
-            $errorMessage = "Error while saving " . $this->toString();
+            $errorMessage = "Error while saving " . self::toStringModel($model);
         }
-        if (!$this->saveLogError($errorMessage)) {
+        if (!self::saveLogErrorModel($model, $errorMessage)) {
             throw new \Exception($errorMessage);
         }
     }
@@ -108,34 +111,36 @@ class BaseModel extends \yii\db\ActiveRecord
     }
 
     public function __toString()
-	{
-	    return $this->toString($this->toStringFields());
-	}
+    {
+        return $this->toString($this->toStringFields());
+    }
 
     /**
-     * Create a string that describe all fields of this object.
+     * Create a string that describe all fields of an model object.
+     * @param ActiveRecord $model
      * @param mixed $fields String or string array. If NULL, all attributes are used.
      * @return string.
      */
-    public function toString($fields = NULL)
+    public static function toStringModel($model, $fields = NULL)
     {
         // Get attributes.
         if ($fields === NULL) {
-            $fields = array_keys($this->attributes);
+            $fields = array_keys($model->attributes);
         }
         if (!is_array($fields)) {
             $fields = array($fields);
         }
         $info = [];
         foreach ($fields as $field) {
-            $info[] = "$field: {$this->$field}";
+            $info[] = "$field: {$model->$field}";
         }
 
         // Get class name.
-        $className = get_class($this);
+        $className = get_class($model);
         $className = ($pos = strrpos($className, '\\')) === FALSE ? $className : substr($className, $pos + 1);
 
         return "$className(" . join(', ', $info) . ')';
+
     }
 
     /**
@@ -149,7 +154,7 @@ class BaseModel extends \yii\db\ActiveRecord
     {
         return $this->tableSchema->primaryKey;
     }
-    
+
     /**
      * Generate a random and unique value for an attribute.
      * Developer may overwrite the generateUniqueRandomAttribute() function, to decide to generate an integer value (by calling generateUniqueRandomInteger) or a string (by calling generateUniqueRandomString()).
@@ -170,10 +175,10 @@ class BaseModel extends \yii\db\ActiveRecord
                 $randomValue = null;
             }
         } while ($randomValue == null);
-        
+
         return $randomValue;
     }
-    
+
     /**
      * Generate a random and unique value.
      * Overwrite this function to decide to generate an integer value (by calling generateUniqueRandomBigInteger())
@@ -190,7 +195,7 @@ class BaseModel extends \yii\db\ActiveRecord
         return $this->generateUniqueRandomBigInteger($prefix);
         //return $this->generateUniqueRandomString($prefix, $length, $characterSet, $characterCase);
     }
-    
+
     /**
      * Generate a random bigint value.
      * @param string $prefix The prefix of the generated string.
@@ -240,14 +245,17 @@ class BaseModel extends \yii\db\ActiveRecord
      * @param boolean $saveDb Save record into DB or not incase create new.
      * @return \batsg\models\BaseModel
      */
-    public static function findOneCreateNew($condition, $saveDb = FALSE)
+    public static function findOneCreateNew($condition, $saveDb = FALSE, $className = null)
     {
-        $result = static::findOne($condition);
+        if (!$className) {
+            $className = static::className();
+        }
+        $result = $className::findOne($condition);
         if (!$result) {
-            $result = \Yii::createObject(static::className());
+            $result = \Yii::createObject($className);
             \Yii::configure($result, $condition);
             if ($saveDb) {
-                $result->saveThrowError();
+                self::saveThrowErrorModel($result);
             }
         }
         return $result;
@@ -263,16 +271,16 @@ class BaseModel extends \yii\db\ActiveRecord
    */
   public function cmp(BaseModel $other, $fields, $direction = 1)
   {
-	  if (!is_array($fields)) {
-		  $fields = array($fields);
-		}
-		$result = 0;
-		foreach ($fields as $field) {
-		  if ($this->$field != $other->$field) {
-				$result = $this->$field < $other->$field ? -1 : 1;
-				break;
-			}
-		}
+      if (!is_array($fields)) {
+          $fields = array($fields);
+        }
+        $result = 0;
+        foreach ($fields as $field) {
+          if ($this->$field != $other->$field) {
+                $result = $this->$field < $other->$field ? -1 : 1;
+                break;
+            }
+        }
     return $result * $direction;
   }
 
@@ -316,5 +324,55 @@ class BaseModel extends \yii\db\ActiveRecord
           }
       }
       return join($join, $values);
+  }
+
+  /**
+   * Get all errors on this model.
+   * @param string $attribute attribute name. Use null to retrieve errors for all attributes.
+   * @return array errors for all attributes or the specified attribute. Empty array is returned if no error.
+   */
+  public function getErrorMessages($attribute = NULL)
+  {
+      return self::getErrorMessagesModel($this, $attribute);
+  }
+
+  /**
+   * Log error of this model.
+   * @param string $message The message to be exported first.
+   * @param string $category
+   */
+  public function logError($message = NULL, $category = 'application')
+  {
+      self::logErrorModel($this, $message, $category);
+  }
+
+  /**
+   * Save this model, write error to log if error occurs.
+   * @param string $errorMessage
+   * @return boolean
+   */
+  public function saveLogError($errorMessage = NULL)
+  {
+      return self::saveLogErrorModel($this, $errorMessage);
+  }
+
+  /**
+   * Save this model, write error to log and throw exception if error occurs.
+   * @param string $errorMessage
+   * @throws \Exception
+   */
+  public function saveThrowError($errorMessage = NULL)
+  {
+      return self::saveThrowErrorModel($this, $errorMessage);
+  }
+
+  /**
+   * Create a string that describe all fields of this object.
+   * @param mixed $fields String or string array. If NULL, all attributes are used.
+   * @return string.
+   */
+  public function toString($fields = NULL)
+  {
+      return self::toStringModel($this, $fields);
   }
 }
