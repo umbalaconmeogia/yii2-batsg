@@ -122,4 +122,12 @@ class CsvWithHeader
         fclose($this->handle);
         \Yii::trace("fclose({$this->csvFile})");
     }
+
+    /**
+     * @return array
+     */
+    public function getHeader()
+    {
+        return $this->header;
+    }
 }
