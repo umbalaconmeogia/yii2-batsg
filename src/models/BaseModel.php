@@ -227,7 +227,7 @@ class BaseModel extends \yii\db\ActiveRecord
      * Find one model by its id.
      * @param string $id
      * @param mixed $nullValue Value to return if not found.
-     * @return Model
+     * @return ActiveRecord
      */
     public static function findModel($id, $nullValue = NULL)
     {
@@ -374,5 +374,21 @@ class BaseModel extends \yii\db\ActiveRecord
   public function toString($fields = NULL)
   {
       return self::toStringModel($this, $fields);
+  }
+
+  /**
+   * Get class short name of an object or FQDN classname.
+   * @param string|object $anything
+   * @return string
+   */
+  public static function classShortName($anything)
+  {
+      $shortName = null;
+      if (is_object($anything)) {
+          $shortName = (new \ReflectionClass($anything))->getShortName();
+      } else {
+          $shortName = substr(strrchr(__CLASS__, "\\"), 1);
+      }
+      return $shortName;
   }
 }
