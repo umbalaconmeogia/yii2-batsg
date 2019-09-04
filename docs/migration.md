@@ -1,3 +1,7 @@
+# Migration
+
+## Create new DB table
+
 Migration that create new table may extends batsg\migrations\BaseMigrationCreateTable to get some function.
 
 The migration class should have protected attribute $table that define the objective table.
@@ -6,8 +10,6 @@ It has safeUp() and down(). down() is defined to delete the table.
 
 safeUp() will call protected function createDbTable(). Please overwridde the createDbTable() in the child class to create the DB table. For example:
 ```php
-<?php
-
 use batsg\migrations\BaseMigrationCreateTable;
 
 /**
@@ -35,5 +37,4 @@ class m170530_031534_create_login_user_table extends BaseMigrationCreateTable
         $this->addComments($this->table, 'ユーザ');
     }
 }
-?>
 ```

@@ -1,6 +1,6 @@
 Model class that extends batsg\models\BaseModel class will have some functions.
 
-Model class that extends batsg\models\BaseModel will have 5 attributes
+Model class that extends batsg\models\BatsgBaseModel will have 5 attributes
 * data_status
 * created_at
 * created_by
