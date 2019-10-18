@@ -76,8 +76,15 @@ trait LoginUserTrait
      */
     public function setPassword($password)
     {
-        $this->plainPassword = $password;
-        $this->password_encryption = \Yii::$app->security->generatePasswordHash($password);
+        if ($password) {
+            $this->plainPassword = $password;
+            $this->password_encryption = \Yii::$app->security->generatePasswordHash($password);    
+        }
+    }
+
+    public function getPassword()
+    {
+        return $this->plainPassword;
     }
 
     /**
