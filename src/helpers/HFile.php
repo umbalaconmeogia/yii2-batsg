@@ -141,4 +141,44 @@ class HFile
         $pathInfo = pathinfo($path);
         return $pathInfo['filename'];
     }
+
+    /**
+     * Remove all empty files and directories inside a directory.
+     * Usage:
+     * ```
+     *   HFile::removeEmptyDir('data');
+     * ```
+     * @param string $directory The directory to be checked and remove.
+     * @param boolean $removeEmptySelf If TRUE, then remove the directory itself if empty. Usually specify to FALSE when call this method to not delete the root directory.
+     * @param boolean $removeEmptyFile Remove empty file or not. If TRUE, then 0 byte file is delted.
+     * @return boolean TRUE if the directory is removed, FALSE otherwise.
+     */
+    public static function removeEmptyDir($directory, $removeEmptySelf = FALSE, $removeEmptyFile = TRUE)
+    {
+        // echo "removeEmptyDir $directory\n";
+        $isEmpty = TRUE;
+        // Remove files and sub-directories.
+        foreach (scandir($directory) as $file) {
+            if ($file != '.' && $file != '..') {
+                $path = "$directory/$file";
+                if (is_file($path)) {
+                    if ($removeEmptyFile && (\filesize($path) == 0)) {
+                        if (!unlink($path)) {
+                            throw new Exception("Cannot delete file $path");
+                        };
+                    } else {
+                        $isEmpty = FALSE;
+                    }
+                } else {
+                    if (!self::removeEmptyDir($path, TRUE, $removeEmptyFile)) {
+                        $isEmpty = FALSE;
+                    };
+                }
+            }
+        }
+        if ($isEmpty && $removeEmptySelf) {
+            rmdir($directory);
+        }
+        return $isEmpty;
+    }
 }
