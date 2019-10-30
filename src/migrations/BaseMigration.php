@@ -102,14 +102,17 @@ class BaseMigration extends Migration
      * @param string[] $columns The columns information in two types: name => definition or name => [definition, comment]
      *                          If 'id' is not specified in $columns, then it will be added and is set as Primary Key.
      * @param string $options additional SQL fragment that will be appended to the generated SQL.
+     * @param boolean $addDefaultColumn If TRUE, then add created_at, updated_at etc.
      *
      */
-    protected function createTableWithExtraFields($table, $columns, $options = NULL)
+    protected function createTableWithExtraFields($table, $columns, $options = NULL, $addDefaultColumn = TRUE)
     {
         $tableCreated = FALSE;
         try {
             // Merge column definition with default columns.
-            $columns = array_merge($this->defaultColumns(), $columns);
+            if ($addDefaultColumn) {
+                $columns = array_merge($this->defaultColumns(), $columns);
+            }
 
             // Prepare columns' definition and comment information.
             $definitions = [];
