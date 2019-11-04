@@ -21,7 +21,7 @@ class HDebug
      * @param string $key
      * @return float current time.
      */
-    public static function startCountTime($key)
+    public static function startCountTime($key = 'default')
     {
         self::$countTime[$key] = microtime(true);
         return self::$countTime[$key];
@@ -32,7 +32,7 @@ class HDebug
      * @param string $key
      * @return float diff time.
      */
-    public static function countTime($key)
+    public static function countTime($key = 'default')
     {
         $time = microtime(true) - self::$countTime[$key];
         return $time;
@@ -44,7 +44,7 @@ class HDebug
      * @param string $messageFormat
      * @param boolean $echo If true, then echo the message.
      */
-    public static function runtimeReport($key, $messageFormat = 'Time: %f seconds', $echo = TRUE)
+    public static function runtimeReport($key = 'default', $messageFormat = 'Time: %f seconds', $echo = TRUE)
     {
         $message = sprintf($messageFormat, self::countTime($key));
         if ($echo) {

@@ -181,4 +181,34 @@ class HFile
         }
         return $isEmpty;
     }
+
+    /**
+     * @param string $source
+     * @param string $dest
+     * @param boolean $removeExistance
+     */
+    public static function copyDir($source, $dest, $removeExistance = FALSE)
+    {
+        // Remove destination dir if exist.
+        if ($removeExistance) {
+            self::rmdir($dest, FALSE);
+        }
+        // Ensure that destination dir is created.
+        if (!\file_exists($dest) || !is_dir($dest)) {
+            @mkdir($dest);
+        }
+        $dir = opendir($source);
+        while(( $file = readdir($dir)) ) {
+            if (($file != '.') && ($file != '..')) {
+                $sourceFile = "$source/$file";
+                $destFile = "$dest/$file";
+                if (is_dir($sourceFile)) {
+                    self::copyDir($sourceFile, $destFile, $removeExistance);
+                } else {
+                    copy($sourceFile, $destFile);
+                }
+            }
+        }
+        closedir($dir);
+    }
 }
