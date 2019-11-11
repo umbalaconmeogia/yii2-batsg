@@ -18,6 +18,12 @@ namespace batsg\helpers;
  */
 class CsvWithHeader
 {
+    public $csvEscape = '\\';
+
+    public $csvDelimiter = ',';
+
+    public $csvEnclosure = '"';
+
     private $csvFile;
 
     private $handle;
@@ -77,7 +83,7 @@ class CsvWithHeader
      */
     public function loadRow()
     {
-        $this->row = fgetcsv($this->handle);
+        $this->row = fgetcsv($this->handle, 0, $this->csvDelimiter, $this->csvEnclosure, $this->csvEscape);
         $this->rowAsAttributes = NULL;
         return $this->row;
     }
