@@ -129,13 +129,14 @@ class HJapanese
    * Get the Japanese era calendar year of a specified year.
    * For example, from 1980 to 昭和 and 55.
    * Currently, this is not sure to work with the year before 1970.
-   *
+   * 
    * @param HDateTime $dateTime
    * @param string $eraName
    * @param int $yearNumber
+   * @param string $yearFormat Use '%s%02d' to add leading zero. Default is '%s%d', which doesn't have leading zero.
    * @return string String of era name and year number, of NULL if cannot calculate.
    */
-  public static function getJapaneseYear($dateTime, &$eraName, &$yearNumber)
+  public static function getJapaneseYear($dateTime, &$eraName = NULL, &$yearNumber = NULL, $yearFormat = '%s%d')
   {
     $calendarPoints = array (
       array("2019/05/01", "令和"),
@@ -151,36 +152,36 @@ class HJapanese
         $point = HDateTime::createFromString($calendarPoint[0]);
         $eraName = $calendarPoint[1];
         $yearNumber = $dateTime->getYear() - $point->getYear() + 1;
-        return "{$eraName}{$yearNumber}年";
+        return sprintf($yearFormat, $eraName, $yearNumber);
       }
     }
     return NULL;
   }
-
   /**
    * 和暦変換用の関数: 平成xx年yy月zz日
    * @param mixed $dateTime string or HDateTime
+   * @param string $yearFormat
    * @param string $monthDayFormat the format string for month and day. For example "m月d日" or "n月j日"
    * @param string $weekDayFormat "(w)" or "w曜日"
    * @return string
    */
-  public static function toJapaneseCalendar($dateTime, $monthDayFormat = 'm月d日', $weekDayFormat = NULL)
+  public static function toJapaneseCalendar($dateTime, $yearFormat = '%s%d年', $monthDayFormat = 'n月j日', $weekDayFormat = NULL)
   {
-      $result = NULL;
+    $result = NULL;
 
-      if (!$dateTime instanceof HDateTime) {
-          $dateTime = HDateTime::createFromString($dateTime);
+    if (!$dateTime instanceof HDateTime) {
+      $dateTime = HDateTime::createFromString($dateTime);
+    }
+    $japaneseYear = self::getJapaneseYear($dateTime, $eraName, $yearNumber, $yearFormat);
+    if ($japaneseYear) {
+      $result = $japaneseYear . $dateTime->toString($monthDayFormat);
+      if ($weekDayFormat) {
+        $result .= str_replace('w', self::$weekDays[$dateTime->getWDay()], $weekDayFormat);
       }
-      $japaneseYear = self::getJapaneseYear($dateTime, $eraName, $yearNumber);
-      if ($japaneseYear) {
-          $result = $japaneseYear . $dateTime->toString($monthDayFormat);
-          if ($weekDayFormat) {
-              $result .= str_replace('w', self::$weekDays[$dateTime->getWDay()], $weekDayFormat);
-          }
-      } else {
-          $result = $dateTime->toString('Y/m/d');
-      }
-      return $result;
+    } else {
+      $result = $dateTime->toString('Y/m/d');
+    }
+    return $result;
   }
 
   public static function japaneseWeekDay($dateTime)

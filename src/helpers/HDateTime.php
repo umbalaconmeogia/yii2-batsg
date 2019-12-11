@@ -10,6 +10,7 @@ class HDateTime
 {
   const FORMAT_DATETIME = 'Y-m-d H:i:s';
   const FORMAT_DATE = 'Y-m-d';
+  const FORMAT_DATE_JAPANESE_NENGAPPI = 'Y年n月j日';
   const FORMAT_TIME = 'H:i:s';
 
   const WDAY_SUN = 0;
