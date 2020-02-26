@@ -20,7 +20,9 @@ use batsg\Y;
  * @property string $unique_id A unique string that is assigned to this record.
  *
  * @property string $createdAt Created date time.
- * @property string $updatedAt Created date time.
+ * @property string $createdAtDate Created date.
+ * @property string $updatedAt Updated date time.
+ * @property string $updatedAtDate Updated date.
  * @property string $dataStatusStr
  */
 class BaseBatsgModel extends BaseModel
@@ -147,6 +149,24 @@ class BaseBatsgModel extends BaseModel
     public function getUpdatedAt()
     {
         return \Yii::$app->formatter->asDatetime($this->updated_at);
+    }
+
+    /**
+     * created_at in date format.
+     * @return string
+     */
+    public function getCreatedAtDate()
+    {
+        return \Yii::$app->formatter->asDate($this->created_at);
+    }
+
+    /**
+     * updated_at in date format.
+     * @return string
+     */
+    public function getUpdatedDate()
+    {
+        return \Yii::$app->formatter->asDate($this->updated_at);
     }
 
     /**
