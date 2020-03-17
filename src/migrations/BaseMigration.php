@@ -159,11 +159,11 @@ class BaseMigration extends Migration
     {
         $columns = [
             $this->primaryKeyColumnName => $this->primaryKey(),
-            'data_status' => $this->integer()->defaultValue(1),
-            'created_by' => $this->integer(),
-            'created_at' => $this->integer(),
-            'updated_by' => $this->integer(),
-            'updated_at' => $this->integer(),
+            'data_status' => $this->tinyInteger()->defaultValue(1),
+            'created_by' => $this->bigInteger(),
+            'created_at' => $this->bigInteger(),
+            'updated_by' => $this->bigInteger(),
+            'updated_at' => $this->bigInteger(),
         ];
         return $columns;
     }
