@@ -53,14 +53,18 @@ class CsvWithHeader
 
     /**
      * Open an CSV file.
-     * @param string $csvFile
+     * @param string|resource $csvFile
      * @param string $mode See fopen()
      */
     public function fopen($csvFile, $mode = 'r')
     {
-        \Yii::trace("fopen($csvFile)");
-        $this->csvFile = $csvFile;
-        $this->handle = fopen($csvFile, $mode);
+        if (is_string($csvFile)) {
+            \Yii::trace("fopen($csvFile)");
+            $this->csvFile = $csvFile;
+            $this->handle = fopen($csvFile, $mode);    
+        } else {
+            $this->handle = $csvFile;
+        }
     }
 
     /**
