@@ -2,18 +2,37 @@
 namespace batsg\helpers;
 
 /**
+ * This class help dealing with CSV file that has the first row as data header.
+ * 
+ * By using CsvWithHeader, we can access to CSV element data via col name defined in header row.
+ * 
  * Example of usage:
- * <pre>
+ * ```php
  *   $constantValues = [];
- *   CsvWithHeader::read(\Yii::$aliases('@app/config/constantValue.csv'), function($csv) {
+ *   CsvWithHeader::read(\Yii::$aliases('@data/employee.csv'), function($csv) {
  *       while ($csv->loadRow() !== FALSE) {
  *           // Get attributes as an array.
  *           $attr = $csv->getRowAsAttributes();
- *           // Create a model from attributes array.
- *           $constantValues[] = new ConstantValue($attr);
+ *           // Display "name" attribute of data row.
+ *           echo 'Employee name: ' . $attr['name'] . "\n";
  *       }
  *   });
- * </pre>
+ * ```
+ * 
+ * If you have CSV file content in memory (for example, file content is post from form), use CsvWithHeader as below.
+ * ```php
+ *   $stream = fopen('php://memory', 'r+');
+ *   fwrite($stream, $csvText);
+ *   rewind($stream);
+ *   CsvWithHeader::read($stream, function($csv) {
+ *       while ($csv->loadRow() !== FALSE) {
+ *           // Get attributes as an array.
+ *           $attr = $csv->getRowAsAttributes();
+ *           // Display "name" attribute of data row.
+ *           echo 'Employee name: ' . $attr['name'] . "\n";
+ *       }
+ *   });
+ * ```
  * @author thanh
  */
 class CsvWithHeader
@@ -53,7 +72,7 @@ class CsvWithHeader
 
     /**
      * Open an CSV file.
-     * @param string|resource $csvFile
+     * @param string|resource $csvFile A CSV file name, or handle of opened file.
      * @param string $mode See fopen()
      */
     public function fopen($csvFile, $mode = 'r')
