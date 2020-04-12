@@ -130,7 +130,7 @@ class BaseController extends Controller
      * }
      * </pre>
      *
-     * @param \Codeception\Lib\Interfaces\ActiveRecord|string $model A model object or fully qualified class name of model.
+     * @param ActiveRecord|string $model A model object or fully qualified class name of model.
      * @param string $redirect Page to redirect if creation is successfull, may be 'view' or 'index'.
      * @param callable $beforeSaveCallback Callback function with $model as parameter.
      * @param callable $afterSaveCallback Callback function with $model as parameter.
