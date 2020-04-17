@@ -24,3 +24,18 @@ updated_at | int | Updated timestamp. Set automatically.
 ```php
 composer require umbalaconmeogia/yii2-batsg
 ```
+
+### Explanation about composer `require`, `update` and `install`
+
+|command|change composer.json|change composer.lock|
+|--|--|--|
+|require|Y|Y|
+|update|N|Y|
+|install|N|N|
+
+* require: `composer require umbalaconmeogia/yii2-batsg`
+  This will update or install the newest version. `composer.json` and `composer.lock` will be updated as well.
+* update: `composer update umbalaconmeogia/yii2-batsg`
+  This will update the package with the highest version respects to your `composer.json`. The entry in `composer.lock` will be updated.
+* install: `composer install umbalaconmeogia/yii2-batsg`
+  This will install version specified in the lock file
