@@ -3,6 +3,7 @@
 namespace batsg\models;
 
 use batsg\helpers\HRandom;
+use Exception;
 use Yii;
 use yii\db\ActiveRecord;
 
@@ -239,13 +240,20 @@ class BaseModel extends \yii\db\ActiveRecord
     }
 
     /**
-     * Find one object that match $condition.
-     * If not exist, create new one with specified condition.
-     * @param array  $condition
+     * Find one object that match $condition. If not exist, create new one with specified condition.
+     * Example of usage:
+     * ```php
+     * // Find a user by specified user name. If not found, create new object but not save into DB.
+     * $user = User::findOneCreateNew(['username' => 'admin']);
+     * // Find a user by specified user name. If not found, create new object and save into DB.
+     * $user = User::findOneCreateNew(['username' => 'admin'], TRUE);
+     * ```
+     * @param array  $condition (type of key=>value).
      * @param boolean $saveDb Save record into DB or not incase create new.
+     * @param string $className Class name of the model to be found in. If null, then caller class is used.
      * @return \batsg\models\BaseModel
      */
-    public static function findOneCreateNew($condition, $saveDb = FALSE, $className = null)
+    public static function findOneCreateNew($condition, $saveDb = FALSE, $className = NULL)
     {
         if (!$className) {
             $className = static::className();
@@ -259,6 +267,62 @@ class BaseModel extends \yii\db\ActiveRecord
             }
         }
         return $result;
+    }
+
+    /**
+     * Find one object by specified attributes condition, and set another attributes' value.
+     * If not exist, create new one.
+     * Example of usage:
+     * ```php
+     * // Find a user by specified user name. If not found, create new object but not save into DB.
+     * $user = User::findSetAttr(['username' => 'admin', 'password'='dkwoei298', 'email' => 'user@example.com'], 'username');
+     * // Find a user by specified user name. If not found, create new object and save into DB.
+     * $user = User::findSetAttr(['username' => 'admin', 'password'='dkwoei298', 'email' => 'user@example.com'], 'username', TRUE);
+     * ```
+     * @param array $attributes Attributes used to find and set value (type of key=>value).
+     * @param string|string[] $keys Keys used to find.
+     * @param boolean $saveDb Save record into DB or not incase create new.
+     * @param string $className Class name of the model to be found in. If null, then caller class is used.
+     * @return \batsg\models\BaseModel
+     */
+    public static function findSetAttr($attributes, $keys, $saveDb = FALSE, $className = NULL)
+    {
+        if (!is_array($keys)) {
+            $keys = [$keys];
+        }
+        $condition = [];
+        foreach ($keys as $key) {
+            $condition[$key] = $attributes[$key];
+        }
+
+        $model = self::findOneCreateNew($condition, FALSE, $className);
+        foreach ($attributes as $key => $value) {
+            $model->$key = $value;
+        }
+        if ($saveDb) {
+            $model->saveThrowError();
+        }
+        return $model;
+    }
+
+    /**
+     * Find existing object by specified attributes condition.
+     * @param array  $condition (type of key=>value).
+     * @param string $className Class name of the model to be found in. If null, then caller class is used.
+     * @return \batsg\models\BaseModel
+     * @throw Exception if not found.
+     */
+    public static function findOneExisting($condition, $className = NULL)
+    {
+        if (!$className) {
+            $className = static::className();
+        }
+        $result = $className::findOne($condition);
+        if (!$result) {
+            throw new Exception("$className not found with condition " . print_r($condition));
+        }
+        return $result;
+
     }
 
   /**

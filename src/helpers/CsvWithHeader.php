@@ -93,7 +93,7 @@ class CsvWithHeader
     public function skipRow($rowNum = 1)
     {
         for ($i = 0; $i < $rowNum; $i++) {
-            $data = fgetcsv($this->handle);
+            $this->loadRow();
         }
     }
 
