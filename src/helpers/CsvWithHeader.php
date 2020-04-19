@@ -102,11 +102,17 @@ class CsvWithHeader
      * <p />
      * The loaded data can be accessed via getRow() or getRowAsAttributes().
      *
+     * @param boolean $trim Trim value or not.
      * @return array
      */
-    public function loadRow()
+    public function loadRow($trim = TRUE)
     {
         $this->row = fgetcsv($this->handle, 0, $this->csvDelimiter, $this->csvEnclosure, $this->csvEscape);
+        if ($trim && $this->row) {
+            foreach ($this->row as $key => $value) {
+                $this->row[$key] = trim($value);
+            }
+        }
         $this->rowAsAttributes = NULL;
         return $this->row;
     }
@@ -122,7 +128,6 @@ class CsvWithHeader
 
     /**
      * Get the loaded row as associated array, with keys defied by header
-     *
      * @return array
      */
     public function getRowAsAttributes()
@@ -141,9 +146,13 @@ class CsvWithHeader
         return $this->rowAsAttributes;
     }
 
-    public function loadHeader()
+    /**
+     * Load header row (remember associated key).
+     * @param boolean $trim Trim value or not.
+     */
+    public function loadHeader($trim = TRUE)
     {
-        $this->header = $this->loadRow();
+        $this->header = $this->loadRow($trim);
     }
 
     public function fclose()
