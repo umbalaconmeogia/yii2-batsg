@@ -187,9 +187,22 @@ class BaseMigration extends Migration
     }
 
     /**
-     * Create multiple indexes.
+     * Create multiple indexes. This is wrapper for Migration#createIndex().
+     * 
+     * Example of usage
+     * ```php
+     * // Create index for user#username
+     * $this->createIndexes('user', 'username');
+     * // Create 2 indexes for user#username and user#employee_id
+     * $this->createIndexes('user', ['username', 'employee_id']);
+     * // Create indexes for (username, email), (username, employee_id)
+     * $this->createIndexes('user', [
+     *     ['username', 'email'],
+     *     ['username', 'employee_id],
+     * ]);
+     * ```
      * @param string $table
-     * @param string|string[]|string[] $columnSets Column to be created index. It may be
+     * @param string|string[]|string[][] $columnSets Column to be created index. It may be
      *                                             + string (index for a single column)
      *                                             + string array (multiple indexes are created for multiple columns).
      *                                             + array of string array: Create multiple indexes, each index is for a single or set of columns.
