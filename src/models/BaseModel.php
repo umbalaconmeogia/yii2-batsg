@@ -300,7 +300,7 @@ class BaseModel extends \yii\db\ActiveRecord
             $model->$key = $value;
         }
         if ($saveDb) {
-            $model->saveThrowError();
+            self::saveThrowErrorModel($model);
         }
         return $model;
     }
