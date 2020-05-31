@@ -3,9 +3,9 @@ namespace batsg\helpers;
 
 /**
  * This class help dealing with CSV file that has the first row as data header.
- * 
+ *
  * By using CsvWithHeader, we can access to CSV element data via col name defined in header row.
- * 
+ *
  * Example of usage:
  * ```php
  *   $constantValues = [];
@@ -18,7 +18,7 @@ namespace batsg\helpers;
  *       }
  *   });
  * ```
- * 
+ *
  * If you have CSV file content in memory (for example, file content is post from form), use CsvWithHeader as below.
  * ```php
  *   $stream = fopen('php://memory', 'r+');
@@ -51,7 +51,15 @@ class CsvWithHeader
 
     private $row;
 
+    /**
+     * @var array Mapping between attribute to value.
+     */
     private $rowAsAttributes;
+
+    /**
+     * @var array Mapping between attribute to index on header.
+     */
+    private $attributeIndexes;
 
     /**
      * Read a CSV file with header.
@@ -80,7 +88,7 @@ class CsvWithHeader
         if (is_string($csvFile)) {
             \Yii::trace("fopen($csvFile)");
             $this->csvFile = $csvFile;
-            $this->handle = fopen($csvFile, $mode);    
+            $this->handle = fopen($csvFile, $mode);
         } else {
             $this->handle = $csvFile;
         }
@@ -153,6 +161,12 @@ class CsvWithHeader
     public function loadHeader($trim = TRUE)
     {
         $this->header = $this->loadRow($trim);
+
+        // Set attribute index.
+        $this->attributeIndexes = [];
+        foreach ($this->header as $index => $attribute) {
+            $this->attributeIndexes[$attribute] = $index;
+        }
     }
 
     public function fclose()
@@ -167,5 +181,16 @@ class CsvWithHeader
     public function getHeader()
     {
         return $this->header;
+    }
+
+    /**
+     * @param string $attribute
+     * @param mixed $value
+     */
+    public function setRowAttribute($attribute, $value)
+    {
+        $this->getRowAsAttributes();
+        $this->rowAsAttributes[$attribute] = $value;
+        $this->row[$this->attributeIndexes[$attribute]] = $value;
     }
 }
