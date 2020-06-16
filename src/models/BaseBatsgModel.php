@@ -79,6 +79,8 @@ class BaseBatsgModel extends BaseModel
 
     /**
      * Create ActiveQuery of finding records that are not deleted logically (data_status <> 9).
+     * @param string|array|ExpressionInterface $condition the conditions that should be put in the WHERE part.
+     * @param array $params — the parameters (name => value) to be bound to the query.
      * @return ActiveQuery
      */
     public static function findNotDeleted($condition = NULL, $params = []) {
@@ -92,11 +94,13 @@ class BaseBatsgModel extends BaseModel
 
     /**
      * Find all records that are not deleted logically (data_status <> 9).
+     * @param string|array|ExpressionInterface $condition the conditions that should be put in the WHERE part.
+     * @param array $params — the parameters (name => value) to be bound to the query.
      * @return Model[] Array of caller class objects.
      */
-    public static function findAllNotDeleted()
+    public static function findAllNotDeleted($condition = NULL, $params = [])
     {
-        return self::findNotDeleted()->all();
+        return self::findNotDeleted($condition, $params)->all();
     }
 
     /**
