@@ -52,4 +52,14 @@ class HDebug
         }
         return $message;
     }
+
+    /**
+     * echo command with new line at the end.
+     * @param string $message
+     * @param string $end
+     */
+    public static function echo($message, $end = "\n")
+    {
+        echo "$message$end";
+    }
 }
