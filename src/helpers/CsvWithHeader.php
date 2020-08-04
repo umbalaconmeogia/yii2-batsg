@@ -92,6 +92,22 @@ class CsvWithHeader
         } else {
             $this->handle = $csvFile;
         }
+
+        $this->ignoreBomCharacters();
+    }
+
+    /**
+     * Read over BOM characters at header of file if exists.
+     */
+    private function ignoreBomCharacters()
+    {
+        // BOM as a string for comparison.
+        $bom = "\xef\xbb\xbf";
+        // Progress file pointer and get first 3 characters to compare to the BOM string.
+        if (fgets($this->handle, 4) !== $bom) {
+            // BOM not found - rewind pointer to start of file.
+            rewind($this->handle);
+        }
     }
 
     /**
