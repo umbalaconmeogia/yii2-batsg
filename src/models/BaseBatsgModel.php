@@ -297,5 +297,22 @@ class BaseBatsgModel extends BaseModel
 //         }
 //         return $this->$foreignKeyField ? $this->$relationalObjectField->$valueField : NULL;
 //     }
+
+    /**
+     * Call updateAll(), also update 'updated_at' to current time.
+     * See updateAll() for parameters.
+     * @param array $attributes attribute values (name-value pairs) to be saved into the table
+     * @param string|array $condition the conditions that will be put in the WHERE part of the UPDATE SQL.
+     * Please refer to [[Query::where()]] on how to specify this parameter.
+     * @param array $params the parameters (name => value) to be bound to the query.
+     * @return int the number of rows updated
+     */
+    public static function updateAllTouchUpdatedAt($attributes, $condition = '', $params = [], $updatedAtAttribute = 'updated_at')
+    {
+        if (!isset($attributes[$updatedAtAttribute])) {
+            $attributes[$updatedAtAttribute] = time();
+        }
+        return self::updateAll($attributes, $condition, $params);
+    }
 }
 ?>
