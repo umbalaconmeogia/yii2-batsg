@@ -46,21 +46,30 @@ class HHtml
     {
         return date('Y-m-d\TH:i:s', strtotime($dateTime));
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param array|string $src the image URL. This parameter will be processed by [[Url::to()]].
 	 * @param integer $width the width of the thumbnail.
-	 * $param array $options the tag options in terms of name-value pairs. 
-	 * @return string the generated image tag. 
+	 * $param array $options the tag options in terms of name-value pairs.
+	 * @return string the generated image tag.
 	 */
 	public static function imgThumbnail($src, $width = 100, $options = []) {
 	    // Set width attribute of the image.
 	    if ($width && !isset($options['width'])) {
 	        $options['width'] = $width;
 	    }
-	    
-	    return Html::img($src, $options);
-	}
 
+	    return Html::img($src, $options);
+    }
+
+    /**
+     * Generate ruby tag.
+     * @pram string $text
+     * @param string|null $ruby
+     */
+    public static function ruby($text, $ruby)
+    {
+        return $ruby ? "<ruby>{$text}<rp>(</rp><rt>{$ruby}</rt><rp>)</rp></ruby>" : $text;
+    }
 }

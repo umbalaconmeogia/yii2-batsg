@@ -81,11 +81,13 @@ class BaseBatsgModel extends BaseModel
      * Create ActiveQuery of finding records that are not deleted logically (data_status <> 9).
      * @param string|array|ExpressionInterface $condition the conditions that should be put in the WHERE part.
      * @param array $params — the parameters (name => value) to be bound to the query.
+     * @param string $table Specify table name to avoid "ambiguous column" error when join tables.
      * @return ActiveQuery
      */
-    public static function findNotDeleted($condition = NULL, $params = []) {
+    public static function findNotDeleted($condition = NULL, $params = [], $table = NULL) {
         /* @var $result ActiveQuery */
-        $result = static::find()->where(['OR', 'data_status IS NULL', ['!=', 'data_status', self::DATA_STATUS_DELETE]]);
+        $result = static::find();
+        self::addWhereNotDeleted($result, $table);
         if ($condition) {
             $result = $result->andWhere($condition, $params);
         }
@@ -96,11 +98,12 @@ class BaseBatsgModel extends BaseModel
      * Find all records that are not deleted logically (data_status <> 9).
      * @param string|array|ExpressionInterface $condition the conditions that should be put in the WHERE part.
      * @param array $params — the parameters (name => value) to be bound to the query.
+     * @param string $table Specify table name to avoid "ambiguous column" error when join tables.
      * @return Model[] Array of caller class objects.
      */
-    public static function findAllNotDeleted($condition = NULL, $params = [])
+    public static function findAllNotDeleted($condition = NULL, $params = [], $table = NULL)
     {
-        return self::findNotDeleted($condition, $params)->all();
+        return self::findNotDeleted($condition, $params, $table)->all();
     }
 
     /**
