@@ -131,12 +131,12 @@ class BaseController extends Controller
      * </pre>
      *
      * @param ActiveRecord|string $model A model object or fully qualified class name of model.
-     * @param string $redirect Page to redirect if creation is successfull, may be 'view' or 'index'.
+     * @param string|array $redirect Page to redirect if creation is successfull. If not set, it will be ['view', 'id' => $id].
      * @param callable $beforeSaveCallback Callback function with $model as parameter.
      * @param callable $afterSaveCallback Callback function with $model as parameter.
      * @return mixed
      */
-    protected function defaultActionCreate($model, $redirect = 'view', $beforeSaveCallback = NULL, $afterSaveCallback = NULL)
+    protected function defaultActionCreate($model, $redirect = NULL, $beforeSaveCallback = NULL, $afterSaveCallback = NULL)
     {
         /** @var BaseBatsgModel $model */
         if (is_string($model)) {
@@ -158,7 +158,12 @@ class BaseController extends Controller
 
                 $transaction->commit();
                 $this->flashUpdateSuccess($model, TRUE);
-                return $this->redirect([$redirect, 'id' => $model->id]);
+
+                // Set default value of $redirect
+                if ($redirect === NULL) {
+                    $redirect = ['view', 'id' => $model->id];
+                }
+                return $this->redirect($redirect);
             } catch (\Exception $e) {
                 $transaction->rollBack();
                 $this->flashUpdateFail($model, TRUE);
@@ -184,13 +189,13 @@ class BaseController extends Controller
      *
      * @param integer $id
      * @param string $modelClass The fully qualified class name.
-     * @param string $redirect Page to redirect if creation is successfull, may be 'view' or 'index'.
+     * @param string|array $redirect Page to redirect if creation is successfull. If not set, it will be ['view', 'id' => $id].
      * @param callable $beforeSaveCallback Callback function with $model as parameter.
      * @param callable $afterSaveCallback Callback function with $model as parameter.
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function defaultActionUpdate($id, $modelClass, $redirect = 'view', $beforeSaveCallback = NULL, $afterSaveCallback = NULL)
+    protected function defaultActionUpdate($id, $modelClass, $redirect = NULL, $beforeSaveCallback = NULL, $afterSaveCallback = NULL)
     {
         $model = $this->findModelById($id, $modelClass);
 
@@ -209,7 +214,12 @@ class BaseController extends Controller
 
                 $transaction->commit();
                 $this->flashUpdateSuccess($model, FALSE);
-                return $this->redirect([$redirect, 'id' => $model->id]);
+
+                // Set default value of $redirect
+                if ($redirect === NULL) {
+                    $redirect = ['view', 'id' => $id];
+                }
+                return $this->redirect($redirect);
             } catch (\Exception $e) {
                 $transaction->rollBack();
                 $this->flashUpdateFail($model, FALSE);
@@ -238,10 +248,11 @@ class BaseController extends Controller
      * @param integer $id
      * @param string $redirect Page to redirect if creation is successfull, may be 'view' or 'index'.
      * @param boolean $logicalDelete Delete logically if TRUE or physically if FALSE.
+     * @param string|array $redirect Page to redirect if creation is successfull. If not set, it will be ['view', 'id' => $id].
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function defaultActionDelete($id, $modelClass, $logicalDelete = TRUE)
+    protected function defaultActionDelete($id, $modelClass, $logicalDelete = TRUE, $redirect = ['index'])
     {
         $model = $this->findModelById($id, $modelClass);
         if ($logicalDelete) {
@@ -251,7 +262,7 @@ class BaseController extends Controller
         }
         Y::setFlashWarning((new \ReflectionClass($model))->getShortName() . ' is deleted.');
 
-        return $this->redirect(['index']);
+        return $this->redirect($redirect);
     }
 
     /**
