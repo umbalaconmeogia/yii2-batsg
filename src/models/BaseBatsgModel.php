@@ -315,7 +315,7 @@ class BaseBatsgModel extends BaseModel
         if (!isset($attributes[$updatedAtAttribute])) {
             $attributes[$updatedAtAttribute] = time();
         }
-        return self::updateAll($attributes, $condition, $params);
+        return static::updateAll($attributes, $condition, $params);
     }
 }
 ?>
