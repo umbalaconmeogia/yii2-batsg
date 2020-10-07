@@ -116,7 +116,7 @@ trait TraitBitAttribute
     /**
      * Usage example
      * ```
-     * public function setRank($value)
+     * public function setRankBits($value)
      * {
      *     $this->setBitAttributeFromArray('rank', $value);
      * }
@@ -142,7 +142,7 @@ trait TraitBitAttribute
      * Return attribute as array of selected values.
      * Usage example
      * ```
-     * public function getRank()
+     * public function getRankBits()
      * {
      *     return $this->getBitAttributeAsArray('rank', self::rankOptionArr());
      * }
