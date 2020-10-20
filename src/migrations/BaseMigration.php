@@ -161,9 +161,9 @@ class BaseMigration extends Migration
             $this->primaryKeyColumnName => $this->primaryKey(),
             'data_status' => $this->tinyInteger()->defaultValue(1),
             'created_by' => $this->bigInteger(),
-            'created_at' => $this->bigInteger(),
+            'created_at' => $this->timestamp(),
             'updated_by' => $this->bigInteger(),
-            'updated_at' => $this->bigInteger(),
+            'updated_at' => $this->timestamp(),
         ];
         return $columns;
     }
@@ -188,7 +188,7 @@ class BaseMigration extends Migration
 
     /**
      * Create multiple indexes. This is wrapper for Migration#createIndex().
-     * 
+     *
      * Example of usage
      * ```php
      * // Create index for user#username
