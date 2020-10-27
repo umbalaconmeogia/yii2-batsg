@@ -155,7 +155,7 @@ trait TraitBitAttribute
         $attributeValue = $this->$attributeName;
         foreach ($allBitNames as $value => $name) {
             if (self::bitIsOn($attributeValue, $value)) {
-                $groups[] = $value;
+                $groups[$value] = $value;
             }
         }
         return $groups;

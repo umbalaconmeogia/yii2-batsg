@@ -62,6 +62,22 @@ class HDateTime
   private $_timestamp;
 
   /**
+   * @param int|string|HDateTime $dateTime
+   * @return HDateTime
+   */
+  public static function createHDateTime($dateTime)
+  {
+    if (!$dateTime instanceof HDateTime) {
+      if (is_numeric($dateTime)) {
+        $dateTime = static::createFromTimestamp($dateTime);
+      } else {
+        $dateTime = static::createFromString($dateTime);
+      }
+    }
+    return $dateTime;
+  }
+
+  /**
    * Create an HDateTime object from a string that represents date time.
    *
    * @param string $dateTime Source date time string.
@@ -438,6 +454,30 @@ class HDateTime
       $result = 1;
     }
     return $result;
+  }
+
+  /**
+   * Get different seconds between two date time.
+   * @param int|string|HDateTime $a
+   * @param int|string|HDateTime $b
+   * @return int
+   */
+  public static function diffSecond($a, $b)
+  {
+    $a = HDateTime::createHDateTime($a);
+    $b = HDateTime::createHDateTime($b);
+    return $b->getTimestamp() - $a->getTimestamp();
+  }
+
+  /**
+   * Get different days between two date time.
+   * @param int|string|HDateTime $a
+   * @param int|string|HDateTime $b
+   * @return int
+   */
+  public static function diffDay($a, $b)
+  {
+    return (int) round(self::diffSecond($a, $b)/84600);
   }
 }
 ?>
