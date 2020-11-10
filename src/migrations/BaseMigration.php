@@ -161,9 +161,9 @@ class BaseMigration extends Migration
             $this->primaryKeyColumnName => $this->primaryKey(),
             'data_status' => $this->tinyInteger()->defaultValue(1),
             'created_by' => $this->bigInteger(),
-            'created_at' => $this->timestamp(),
+            'created_at' => $this->integer(),
             'updated_by' => $this->bigInteger(),
-            'updated_at' => $this->timestamp(),
+            'updated_at' => $this->integer(),
         ];
         return $columns;
     }
