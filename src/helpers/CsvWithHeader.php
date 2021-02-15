@@ -8,7 +8,6 @@ namespace batsg\helpers;
  *
  * Example of usage:
  * ```php
- *   $constantValues = [];
  *   CsvWithHeader::read(\Yii::$aliases('@data/employee.csv'), function($csv) {
  *       while ($csv->loadRow() !== FALSE) {
  *           // Get attributes as an array.
