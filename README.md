@@ -1,5 +1,8 @@
 # yii2-batsg
-My style, my best practice and my libraries when using yii2 framework.
+[![Build Status](https://travis-ci.org/khoawasabi/yii2-batsg.svg?branch=master)](https://travis-ci.org/khoawasabi/yii2-batsg)
+[![Test Coverage](https://codeclimate.com/github/khoawasabi/yii2-batsg/badges/coverage.svg)](https://codeclimate.com/github/khoawasabi/yii2-batsg/coverage)
+[![Issue Count](https://codeclimate.com/github/khoawasabi/yii2-batsg/badges/issue_count.svg)](https://codeclimate.com/github/khoawasabi/yii2-batsg)
+Khoa is applying PHPUnit to test it out.
 
 ## Overview
 

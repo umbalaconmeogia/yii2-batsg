@@ -1,0 +1,18 @@
+language: php
+
+php:
+  - '5.6'
+  - hhvm
+  - nightly
+
+before_script:
+  - composer install --dev --no-interaction
+
+
+script:
+  - mkdir -p build/logs
+  - vendor/bin/phpunit tests/helpers/DataTest.php
+after_script:
+  - CODECLIMATE_REPO_TOKEN="a61561d93b1f1101de16925d244b1813c4314b7cf32bf3bf87aefb5d917b15db" 
+    vendor/bin/test-reporter --stdout > codeclimate.json
+  - "curl -X POST -d @codeclimate.json -H 'Content-Type: application/json' -H 'User-Agent: Code Climate (PHP Test Reporter v0.1.1)' https://codeclimate.com/test_reports"
