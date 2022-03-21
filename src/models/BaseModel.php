@@ -133,7 +133,8 @@ class BaseModel extends \yii\db\ActiveRecord
         }
         $info = [];
         foreach ($fields as $field) {
-            $info[] = "$field: {$model->$field}";
+            $value = is_array($model->$field) ? print_r($model->$field, TRUE) : $model->$field;
+            $info[] = "$field: $value";
         }
 
         // Get class name.
