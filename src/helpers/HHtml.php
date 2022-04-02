@@ -1,7 +1,6 @@
 <?php
 namespace batsg\helpers;
 
-use yii\base\Model;
 use yii\helpers\Html;
 
 /**
@@ -71,5 +70,20 @@ class HHtml
     public static function ruby($text, $ruby)
     {
         return $ruby ? "<ruby>{$text}<rp>(</rp><rt>{$ruby}</rt><rp>)</rp></ruby>" : $text;
+    }
+
+    /**
+     * @param string $text Anchor text.
+     * @param array|string|null $url
+     * @param array $option
+     * @param bool $newTab If true, then add target="_blank" to option of Html::a().
+     * @return string|null anchor tag. If $text is NULL, then this function return NULL.
+     */
+    public static function a($text, $url, $option = [], $newTab = FALSE)
+    {
+        if ($newTab) {
+            $option['target'] = '_blank';
+        }
+        return ($text || $text === 0 || $text === '0') ? Html::a($text, $url, $option) : NULL;
     }
 }
