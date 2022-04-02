@@ -1,6 +1,8 @@
 <?php
 namespace batsg\helpers;
 
+use Exception;
+
 class HGridView
 {
     /**
@@ -28,7 +30,7 @@ class HGridView
 
     /**
      * Create a GridView column that is a HTML link (anchor tag) that is opened in new tab.
-     * Usage example
+     * Example of usage
      * ```php
      * <?= GridView::widget([
      *     'columns' => [
@@ -36,7 +38,7 @@ class HGridView
      *
      *         // Code that use this function
      *         HGridView::linkColumn('title', function($model) {
-     *             return [$model->title, ['/data/view', 'id' => $model->id]];
+     *             return [$model->title, ['/book/view', 'id' => $model->id]];
      *         }),
      *     ],
      * ]); ?>
@@ -44,7 +46,7 @@ class HGridView
      * The code below
      * ```php
      *     HGridView::linkColumn('title', function($model) {
-     *         return [$model->title, ['/data/view', 'id' => $model->id]];
+     *         return [$model->title, ['/book/view', 'id' => $model->id]];
      *     }, TRUE),
      * ```
      *equivalents to
@@ -54,24 +56,77 @@ class HGridView
      *          'format' => 'raw',
      *          'value' => function($model) {
      *              $title = $model->title;
-     *              return ($title || $title === 0 || $title === '0') ? Html::a($model->title, $model->navitime_url, ['target' => '_blank']) : NULL;
+     *              return ($title || $title === 0 || $title === '0') ? Html::a($model->title, $['/data/view', 'id' => $model->id], ['target' => '_blank']) : NULL;
      *          },
      *      ],
      * ```
+     * There are 3 ways to use this.
+     * 1. Simplest way
+     *   ```php
+     *    HGridView::linkColumn('url'); // Generate link to $model->url, with text is $model->url itself.
+     *   ```
+     * 2. Fixed title text.
+     *   ```php
+     *    HGridView::linkColumn('url', 'Link to page'); // Generate link to $model->url, with text is "Link to page".
+     *   ```
+     * 3. Use function to generate anchor tag dyanically.
+     *   ```php
+     *     HGridView::linkColumn('title', function($model) {
+     *         return [$model->title, ['/book/view', 'id' => $model->id]];
+     *     }, TRUE),
+     *   ```
      * @param string $attribute
-     * @param callable $createHtmlAParam A function that receive $model as parameter, and return an array of elements text, url, and option used for Html::a()
+     * @param callable|string|null $anchorParam
+     *                             If it is a function, then it receives $model as parameter, and return an array of elements text, url, and option used for Html::a()
+     *                             If it is a string, then it is an attribute name that used to generate the link (link to $model->$anchorParam)
+     *                             If it is NULL, then this is a link to $model->$attribute.
      * @param bool $newTab If true, then add target="_blank" to option of Html::a().
      * @return array used for GridView::widget() columns element.
      */
-    public static function linkColumn($attribute, $anchorParam, $newTab = FALSE)
+    public static function linkColumn($attribute, $anchorParam = NULL, $newTab = FALSE)
     {
         return [
             'attribute' => $attribute,
             'format' => 'raw',
-            'value' => function($model) use ($anchorParam, $newTab) {
-                $params = call_user_func($anchorParam, $model);
-                list($text, $url, $option) = array_pad($params, 3, []);
-                return HHtml::a($text, $url, $option, $newTab);
+            'value' => function($model) use ($attribute, $anchorParam, $newTab) {
+                if ($anchorParam == NULL) {
+                    $params = [$model->$attribute, $model->$attribute, []];
+                } else if (is_string($anchorParam)) {
+                    $params = [$anchorParam, $model->$attribute, []];
+                } else if (is_callable($anchorParam)) {
+                    $params = call_user_func($anchorParam, $model);
+                } else {
+                    throw new Exception("anchorParam accepts only callable|string|null");
+                }
+                list($text, $url, $options) = array_pad($params, 3, []);
+                return HHtml::a($text, $url, $options, $newTab);
+            },
+        ];
+    }
+
+    /**
+     * Create a GridView column that display an image.
+     * Example of usage
+     * ```php
+     * <?= GridView::widget([
+     *     'columns' => [
+     *         ['class' => 'yii\grid\SerialColumn'],
+     *
+     *         // Code that use this function
+     *         HGridView::imageColumn('image_path'),
+     *     ],
+     * ]); ?>
+     * ```
+     */
+    public static function imageColumn($attribute, $options = [], $width = 100)
+    {
+        return [
+            'attribute' => $attribute,
+            'format' => 'raw',
+            'value' => function($model) use ($attribute, $options, $width) {
+                $src = $model->$attribute;
+                $thumbnail = HHtml::imgThumbnail($src, $options, $width);
+                return HHtml::a($thumbnail, $src, [], TRUE);
             },
         ];
     }

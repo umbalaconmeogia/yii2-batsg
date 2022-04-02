@@ -48,18 +48,23 @@ class HHtml
 
 	/**
 	 *
-	 * @param array|string $src the image URL. This parameter will be processed by [[Url::to()]].
-	 * @param integer $width the width of the thumbnail.
+	 * @param array|string|null $src the image URL. This parameter will be processed by [[Url::to()]].
 	 * $param array $options the tag options in terms of name-value pairs.
-	 * @return string the generated image tag.
+	 * @param integer $width the width of the thumbnail.
+	 * @return string|null the generated image tag. If src is null, then return NULL.
 	 */
-	public static function imgThumbnail($src, $width = 100, $options = []) {
-	    // Set width attribute of the image.
-	    if ($width && !isset($options['width'])) {
-	        $options['width'] = $width;
-	    }
+	public static function imgThumbnail($src, $options = [], $width = 100)
+    {
+        $html = NULL;
+        if ($src) {
+            // Set width attribute of the image.
+            if ($width && !isset($options['width'])) {
+                $options['width'] = $width;
+            }
 
-	    return Html::img($src, $options);
+            $html = Html::img($src, $options);
+        }
+        return $html;
     }
 
     /**
@@ -75,15 +80,15 @@ class HHtml
     /**
      * @param string $text Anchor text.
      * @param array|string|null $url
-     * @param array $option
-     * @param bool $newTab If true, then add target="_blank" to option of Html::a().
+     * @param array $options
+     * @param bool $newTab If true, then add target="_blank" to options of Html::a().
      * @return string|null anchor tag. If $text is NULL, then this function return NULL.
      */
-    public static function a($text, $url, $option = [], $newTab = FALSE)
+    public static function a($text, $url, $options = [], $newTab = FALSE)
     {
         if ($newTab) {
-            $option['target'] = '_blank';
+            $options['target'] = '_blank';
         }
-        return ($text || $text === 0 || $text === '0') ? Html::a($text, $url, $option) : NULL;
+        return ($text || $text === 0 || $text === '0') ? Html::a($text, $url, $options) : NULL;
     }
 }
