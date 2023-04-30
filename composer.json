@@ -12,5 +12,8 @@
         "psr-4": {"batsg\\": "src/"}
     },
 	"keywords": ["yii2", "utility"],
-	"license": "MIT"
+	"license": "MIT",
+    "require": {
+        "umbalaconmeogia/php-util": "^0.0.2"
+    }
 }
