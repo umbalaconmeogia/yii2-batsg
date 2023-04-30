@@ -10,9 +10,9 @@ use yii\helpers\Html;
  * To use this widget, add this widget in `layouts/main.php`.
  * ```php
  * <?php $this->beginBody() ?>
- * <?= EnvironmentNotice::widget() ?>
- * <div class="wrap">
- * // other stuff.
+ *     <?= EnvironmentNotice::widget() ?>
+ *     <div class="wrap">
+ *     // other stuff.
  * ```
  * By default, the text *LOCAL* is displayed at the top-left cornor.
  * To change the text, config the widget in yii2 configuration file (set to NULL on production environment to display nothing).
@@ -22,6 +22,10 @@ use yii\helpers\Html;
  *           'batsg\widgets\EnvironmentNotice' => ['environment' => NULL],
  *       ],
  *   ],
+ * ```
+ * or specify in widget call
+ * ```php
+ *     <?= EnvironmentNotice::widget(['environtment' => Yii::$app->params['environmentNotice']]) ?>
  * ```
  */
 class EnvironmentNotice extends Widget
