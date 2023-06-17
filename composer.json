@@ -14,6 +14,6 @@
 	"keywords": ["yii2", "utility"],
 	"license": "MIT",
     "require": {
-        "umbalaconmeogia/php-util": "^0.0.2"
+        "umbalaconmeogia/php-util": "*"
     }
 }
