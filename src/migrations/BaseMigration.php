@@ -281,7 +281,7 @@ class BaseMigration extends Migration
             if ($notNull) {
                 $definition[] = 'NOT NULL';
             }
-            $definition[] = "REFERENCES {$refTable}(${refColumn})";
+            $definition[] = "REFERENCES {$refTable}({$refColumn})";
             $result = join(' ', $definition);
         } else {
             $result = $this->$type();
