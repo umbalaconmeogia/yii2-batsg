@@ -30,7 +30,7 @@ class HFile
             self::removeDirRecursively($directory);
         } else {
             if ($checkDirExistance) {
-                throw new InvalidArgumentException("Directory $directory does not exist.");
+                throw new \InvalidArgumentException("Directory $directory does not exist.");
             }
         }
     }
@@ -48,7 +48,6 @@ class HFile
                 }
             }
         }
-        \Yii::info("remove {$directory}");
         rmdir($directory);
     }
 
@@ -74,19 +73,24 @@ class HFile
     }
 
     /**
-     * List files inside specified path (exclude .
-     * and ..).
+     * List files inside specified path (exclude . and ..).
      *
      * @param string $directory
+     * @param string $extension
      * @return array of filename => path
      */
-    public static function listFile($directory)
+    public static function listFile($directory, $extension = NULL)
     {
         $result = array();
+        $extension = $extension ? strtolower($extension) : $extension;
         foreach (scandir($directory) as $file) {
             if ($file != '.' && $file != '..') {
                 $path = "$directory/$file";
-                if (is_file($path)) {
+                $condition = is_file($path);
+                if ($condition && $extension) {
+                    $condition = $condition && ($extension == strtolower(pathinfo($file, PATHINFO_EXTENSION)));
+                }
+                if ($condition) {
                     $result[$file] = $path;
                 }
             }
