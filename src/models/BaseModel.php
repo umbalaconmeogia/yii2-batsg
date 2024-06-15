@@ -271,6 +271,37 @@ class BaseModel extends \yii\db\ActiveRecord
     }
 
     /**
+     * Find all objects that match $condition. If not exist, create new one with specified condition.
+     * Example of usage:
+     * ```php
+     * // Find a user by specified user name. If not found, create new object but not save into DB.
+     * $user = User::findAllCreateNew(['username' => 'admin']);
+     * // Find a user by specified user name. If not found, create new object and save into DB.
+     * $user = User::findAllCreateNew(['username' => 'admin'], TRUE);
+     * ```
+     * @param array  $condition (type of key=>value).
+     * @param boolean $saveDb Save record into DB or not incase create new.
+     * @param string $className Class name of the model to be found in. If null, then caller class is used.
+     * @return \batsg\models\BaseModel[]
+     */
+    public static function findAllCreateNew($condition, $saveDb = FALSE, $className = NULL)
+    {
+        if (!$className) {
+            $className = static::class;
+        }
+        $result = $className::findAll($condition);
+        if (!$result) {
+            $model = \Yii::createObject($className);
+            \Yii::configure($model, $condition);
+            if ($saveDb) {
+                self::saveThrowErrorModel($model);
+            }
+            $result = [$model];
+        }
+        return $result;
+    }
+
+    /**
      * Find one object by specified attributes condition, and set another attributes' value.
      * If not exist, create new one.
      * Example of usage:
@@ -304,6 +335,41 @@ class BaseModel extends \yii\db\ActiveRecord
             self::saveThrowErrorModel($model);
         }
         return $model;
+    }
+
+    /**
+     * Find all objects by specified attributes condition, and set another attributes' value.
+     * If not exist, create new one.
+     * Example of usage:
+     * ```php
+     * // Find a user by specified user name. If not found, create new object but not save into DB.
+     * $user = User::findAllSetAttr(['username' => 'admin', 'password'='dkwoei298', 'email' => 'user@example.com'], 'username');
+     * // Find a user by specified user name. If not found, create new object and save into DB.
+     * $user = User::findAllSetAttr(['username' => 'admin', 'password'='dkwoei298', 'email' => 'user@example.com'], 'username', TRUE);
+     * ```
+     * @param array $attributes Attributes used to find and set value (type of key=>value).
+     * @param string|string[] $keys Keys used to find.
+     * @param boolean $saveDb Save record into DB or not incase create new.
+     * @param string $className Class name of the model to be found in. If null, then caller class is used.
+     * @return \batsg\models\BaseModel[]
+     */
+    public static function findAllSetAttr($attributes, $keys, $saveDb = FALSE, $className = NULL)
+    {
+        if (!is_array($keys)) {
+            $keys = [$keys];
+        }
+        $condition = array_intersect($attributes, array_flip($keys));
+
+        $models = self::findAllCreateNew($condition, FALSE, $className);
+        foreach ($models as $model) {
+            foreach ($attributes as $key => $value) {
+                $model->$key = $value;
+            }
+            if ($saveDb) {
+                self::saveThrowErrorModel($model);
+            }
+        }
+        return $models;
     }
 
     /**
