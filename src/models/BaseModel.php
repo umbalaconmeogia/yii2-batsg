@@ -358,7 +358,7 @@ class BaseModel extends \yii\db\ActiveRecord
         if (!is_array($keys)) {
             $keys = [$keys];
         }
-        $condition = array_intersect($attributes, array_flip($keys));
+        $condition = array_intersect_key($attributes, array_flip($keys));
 
         $models = self::findAllCreateNew($condition, FALSE, $className);
         foreach ($models as $model) {
